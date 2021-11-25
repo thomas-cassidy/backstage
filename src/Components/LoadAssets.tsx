@@ -1,9 +1,11 @@
 import React, { ReactNode, useEffect, useState } from 'react'
-import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
+// import { Provider } from 'react-redux'
+// import { PersistGate } from 'redux-persist/integration/react'
 import AppLoading from 'expo-app-loading'
-import store from '../Redux/store'
-import persistStore from 'redux-persist/es/persistStore'
+// import store from '../Redux/store'
+// import persistStore from 'redux-persist/es/persistStore'
+import { useAppDispatch, useAppSelector } from '../Redux/hooks'
+import { getSomething } from '../Redux/test/Test'
 // import { AsyncStorage } from 'react-native'
 
 interface Props {
@@ -12,14 +14,19 @@ interface Props {
 
 const LoadAssets = ({ children }: Props) => {
     const [ready, setReady] = useState(false)
+    const testState = useAppSelector(state => state.test)
+    const dispatch = useAppDispatch()
 
     // let persistor = persistStore(store)
 
     useEffect(() => {
-        //get app data here
-        // console.log({ initialState: store.getState() })
-        setReady(true)
+        //fetch data
+        dispatch(getSomething()).then(() => setReady(true))
     }, [])
+
+    useEffect(() => {
+        console.log(testState.status)
+    }, [testState])
 
     if (!ready) {
         return (
@@ -29,11 +36,11 @@ const LoadAssets = ({ children }: Props) => {
 
     else {
         return (
-            <Provider store={store}>
-                <PersistGate persistor={persistor} loading={null}>
-                    {children}
-                </PersistGate>
-            </Provider>
+
+            <>
+                {children}
+            </>
+
         )
     }
 }

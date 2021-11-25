@@ -7,12 +7,11 @@ export const castSlice = createSlice({
     name: 'cast',
     initialState: initialCastState,
     reducers: {
-        ADD_CASTMEMBER: ({ cast }, action: PayloadAction<CastMember>) => {
-            let newId = cast.length === 0 ? 0 : cast[cast.length - 1].id + 1
-            cast.concat({ ...action.payload, id: newId })
+        ADD_CASTMEMBER: ({ cast }, { payload }: PayloadAction<CastMember>) => {
+            cast.push({ ...payload, id: 100 })
         },
         REMOVE_CASTMEMBER: ({ cast }, action: PayloadAction<CastMember>) => {
-            cast.filter(c => c.id === action.payload.id)
+            console.log(cast.filter(c => c.id !== action.payload.id))
         },
         EDIT_CASTMEMBER: ({ cast }, action: PayloadAction<CastMember>) => {
             cast.map(c => {

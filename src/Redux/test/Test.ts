@@ -1,12 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-export const getSomething = createAsyncThunk(
-    'test',
-    async () => {
-        return fetch('').then(res => res.json())
-    }
-)
-
 interface state {
     stuff: string[],
     status: string
@@ -14,8 +7,20 @@ interface state {
 
 const initialState: state = {
     stuff: [],
-    status: '',
+    status: 'loading...',
 }
+
+export const getSomething = createAsyncThunk<string[]>(
+    'test',
+    async () => {
+        const fetchPromise = await new Promise<string[]>((resolve, reject) => {
+            setTimeout(() => {
+                Math.round(Math.random()) === 0 ? reject('This is a test') : resolve(['1', '2'])
+            }, 2000)
+        })
+        return fetchPromise
+    }
+)
 
 const testSlice = createSlice({
     name: 'test',
@@ -23,17 +28,17 @@ const testSlice = createSlice({
     reducers: {
 
     },
-    extraReducers: {
-        [getSomething.pending]: (state, action) => {
+    extraReducers: builder => {
+        builder.addCase(getSomething.pending, (state, action) => {
             state.status = 'loading...'
-        },
-        [getSomething.fulfilled]: (state, { payload }) => {
+        })
+        builder.addCase(getSomething.fulfilled, (state, { payload }) => {
             state.status = 'success...',
                 state.stuff = payload
-        },
-        [getSomething.rejected]: (state) => {
+        })
+        builder.addCase(getSomething.rejected, (state) => {
             state.status = 'failed'
-        }
+        })
     }
 })
 
