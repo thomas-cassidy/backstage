@@ -1,30 +1,31 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction, current } from '@reduxjs/toolkit'
 import { CastMember } from '../Types/AppTypes'
 import { initialCastState } from '../Util/InitialState'
 
+const getIndex = (cast: CastMember[], id: string) => {
+    for (var x = 0; x < cast.length; x++) {
+        if (cast[x].id === id) {
+            return x
+        }
+    }
+    return -1
+}
 
 export const castSlice = createSlice({
     name: 'cast',
     initialState: initialCastState,
     reducers: {
         ADD_CASTMEMBER: ({ cast }, { payload }: PayloadAction<CastMember>) => {
-            cast.push({ ...payload, id: 100 })
+            cast.push({ ...payload, id: String(Math.random()).substring(2) })
         },
-        REMOVE_CASTMEMBER: ({ cast }, action: PayloadAction<CastMember>) => {
-            console.log(cast.filter(c => c.id !== action.payload.id))
+        REMOVE_CASTMEMBER: ({ cast }, { payload }: PayloadAction<CastMember>) => {
+            cast.splice(getIndex(cast, payload.id), 1)
         },
-        EDIT_CASTMEMBER: ({ cast }, action: PayloadAction<CastMember>) => {
-            cast.map(c => {
-                if (c.id === action.payload.id) {
-                    let { name, role, group, image, notes } = action.payload
-                    c.name = name
-                    c.role = role
-                    c.group = group
-                    c.image = image
-                    c.notes = notes
-                }
-                return
-            })
+        EDIT_CASTMEMBER: (state, { payload: { id, field, value } }: PayloadAction<{ id: string, field: keyof CastMember, value: string }>) => {
+            const castMember = state.cast.find(c => c.id === id)
+            if (castMember) {
+                castMember[field] = value
+            }
         }
     }
 })

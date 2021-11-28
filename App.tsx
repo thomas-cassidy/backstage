@@ -26,7 +26,7 @@ export default function App() {
             <MainStack.Screen component={CueSheets} name={'CueSheets'} />
             <MainStack.Screen component={NewCueSheet} name={'NewCueSheet'} options={{ presentation: 'modal' }} />
             <MainStack.Screen component={PlotPage} name={'PlotPage'} options={{ gestureEnabled: false }} />
-            <MainStack.Screen component={Todos} name={'Todos'} options={{ gestureEnabled: false }} />
+            <MainStack.Screen component={Todos} name={'Todos'} />
           </MainStack.Navigator>
         </NavigationContainer>
       </LoadAssets>

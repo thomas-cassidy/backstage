@@ -93,7 +93,7 @@ const Cast = ({ navigation }: Props) => {
             </ScrollView>
             <RoundButton
                 label={'Add Cast Member'}
-                onPress={() => navigation.navigate('CastProfile', { id: -1 })}
+                onPress={() => navigation.navigate('CastProfile', { id: '-1' })}
             />
         </SafeAreaView>
     )

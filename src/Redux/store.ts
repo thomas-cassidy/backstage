@@ -1,18 +1,27 @@
-import { configureStore, combineReducers, PayloadAction, CombinedState, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore, combineReducers, PayloadAction, Middleware, MiddlewareAPI, CombinedState, Dispatch, AnyAction } from '@reduxjs/toolkit'
 // import { persistReducer } from 'redux-persist'
 // import { PersistConfig } from 'redux-persist/es/types'
 // import AsyncStorage from '@react-native-async-storage/async-storage'
 // import storage from 'redux-persist/lib/storage'
-import { Action, Middleware } from 'redux'
 import castSliceReducer from './cast'
-import plotsSliceReducer from './plots'
+import plotsSliceReducer, { PlotState } from './plots'
 import todosSliceReducer from './todos'
-import { testSliceReducer } from './test'
+import { testSliceReducer, testState } from './test'
+import { TodosState } from '../Util/InitialState'
+import { CastState } from '../Types/AppTypes'
+import { ThunkMiddleware } from 'redux-thunk'
 
 // const persistConfig: PersistConfig<any> = {
 //     key: 'backstagePersist',
 //     storage: AsyncStorage
 // }
+
+type combinedState = CombinedState<{
+    cast: CastState;
+    plots: PlotState;
+    todos: TodosState;
+    test: testState;
+}>
 
 const rootReducer = combineReducers({
     cast: castSliceReducer,
@@ -23,22 +32,18 @@ const rootReducer = combineReducers({
 
 // const persistedReducer = persistReducer(persistConfig, rootReducer)
 
-const myMiddleware = (store: any) => {
-    return (next: any) => {
-        return (action: PayloadAction<any>) => {
-            return console.log('middleware!!!')
+const ACTION_LOGGER: ThunkMiddleware = ({ dispatch, getState }) => {
+    return (next) => {
+        return (action) => {
+            console.log(action.type)
+            return next(action)
         }
     }
 }
 
 const store = configureStore({
     reducer: rootReducer,
-    // middleware: getDefaultMiddleware => {
-    //     getDefaultMiddleware()
-    //         .prepend(
-    //             myMiddleware as Middleware<(action: Action<'test'>) => void, {}>
-    //         )
-    // }
+    middleware: getDefault => getDefault().concat(ACTION_LOGGER)
 })
 
 export type RootState = ReturnType<typeof store.getState>

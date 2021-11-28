@@ -3,8 +3,12 @@ export type CastMember = {
     role: string;
     notes: string;
     group?: string;
-    id: number;
+    id: string;
     image?: string;
+}
+
+export interface CastState {
+    cast: CastMember[]
 }
 
 export type CueType = {

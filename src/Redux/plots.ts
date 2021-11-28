@@ -3,7 +3,7 @@ import { CueType, Plot } from '../Types/AppTypes'
 
 
 
-interface PlotState {
+export interface PlotState {
     plots: Plot[]
 }
 

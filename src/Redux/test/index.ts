@@ -1,1 +1,1 @@
-export { default as testSliceReducer } from './Test'
+export { default as testSliceReducer, testState } from './Test'

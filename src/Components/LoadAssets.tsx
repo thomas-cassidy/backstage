@@ -1,12 +1,9 @@
 import React, { ReactNode, useEffect, useState } from 'react'
-// import { Provider } from 'react-redux'
 // import { PersistGate } from 'redux-persist/integration/react'
 import AppLoading from 'expo-app-loading'
-// import store from '../Redux/store'
 // import persistStore from 'redux-persist/es/persistStore'
 import { useAppDispatch, useAppSelector } from '../Redux/hooks'
 import { getSomething } from '../Redux/test/Test'
-// import { AsyncStorage } from 'react-native'
 
 interface Props {
     children: ReactNode

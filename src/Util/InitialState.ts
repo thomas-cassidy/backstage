@@ -1,14 +1,12 @@
-import { CastMember, ToDo } from "../Types/AppTypes";
+import { CastMember, CastState, ToDo } from "../Types/AppTypes";
 
-interface CastState {
-    cast: CastMember[]
-}
+
 export const initialCastState: CastState = {
     cast: [{
         name: 'Luke Brady',
         role: 'Moses',
         notes: '',
-        id: 0,
+        id: String(Math.random()).substring(2),
         group: 'Principles',
         image: 'https://backstagebucket.s3.eu-west-2.amazonaws.com/princeofegypt/Luke+Brady.png'
     },
@@ -16,20 +14,20 @@ export const initialCastState: CastState = {
         name: 'Sasha',
         role: 'Sasha',
         notes: '',
-        id: 1,
+        id: String(Math.random()).substring(2),
         group: 'Ensemble F',
         image: ''
     }, {
         name: 'Adam',
         role: 'Adam',
         notes: '',
-        id: 2,
+        id: String(Math.random()).substring(2),
         group: 'Ensemble M',
         image: ''
     }]
 }
 
-interface TodosState {
+export interface TodosState {
     todos: ToDo[];
     showComplete: boolean;
 };

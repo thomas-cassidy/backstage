@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
-interface state {
+export interface testState {
     stuff: string[],
     status: string
 }
 
-const initialState: state = {
+const initialState: testState = {
     stuff: [],
     status: 'loading...',
 }
