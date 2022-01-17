@@ -18,7 +18,14 @@ const LoadAssets = ({ children }: Props) => {
 
     useEffect(() => {
         //fetch data
-        dispatch(getSomething()).then(() => setReady(true))
+        dispatch(getSomething())
+            .then(() => setReady(true))
+
+        // fetch('http://localhost:3001/api/shows/Prince%20of%20Egypt')
+        //     .then(res => res.json())
+        //     .then(data => console.log(data))
+        //     // .then(data => console.log(data))
+        //     .catch(err => console.log(err))
     }, [])
 
     useEffect(() => {

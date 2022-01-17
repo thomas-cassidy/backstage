@@ -13,11 +13,14 @@ const initialState: testState = {
 export const getSomething = createAsyncThunk<string[]>(
     'test',
     async () => {
-        const fetchPromise = await new Promise<string[]>((resolve, reject) => {
-            setTimeout(() => {
-                Math.round(Math.random()) === 0 ? reject('This is a test') : resolve(['1', '2'])
-            }, 2000)
-        })
+        // const fetchPromise = await new Promise<string[]>((resolve, reject) => {
+        //     setTimeout(() => {
+        //         Math.round(Math.random()) === 0 ? reject('This is a test') : resolve(['1', '2'])
+        //     }, 2000)
+        // })
+        const fetchPromise = await fetch('http://localhost:3001/api/shows/Prince%20of%20Egypt')
+            .then(res => res.json())
+
         return fetchPromise
     }
 )
