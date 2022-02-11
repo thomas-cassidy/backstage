@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { CueType, Plot } from '../Types/AppTypes'
 
-
-
 export interface PlotState {
     plots: Plot[]
 }
@@ -24,6 +22,7 @@ export const plotSlice = createSlice({
             plots.push({
                 name: name,
                 cues: [{
+                    id: Math.random().toString(),
                     cuePoint: 'New Cue',
                     location: 'Location',
                     notes: 'Press the Edit button to start adding Cues',
@@ -35,6 +34,7 @@ export const plotSlice = createSlice({
         ADD_CUE: ({ plots }, { payload }: PayloadAction<{ id: number, index: number }>) => {
             plots.map((p, i) => {
                 if (p.id === payload.id) p.cues.splice(payload.index + 1, 0, {
+                    id: Math.random().toString(),
                     cuePoint: 'New Cue ' + payload.index,
                     location: 'Location',
                     notes: '',
@@ -47,7 +47,6 @@ export const plotSlice = createSlice({
             plots.map((p, i) => {
                 if (p.id === payload.id) p.cues.splice(payload.index, 1)
             })
-
         },
         EDIT_CUE: ({ plots }, { payload: { id, index, field, value } }: PayloadAction<{ id: number, index: number, field: keyof CueType, value: string }>) => {
             let p = plots.find(p => p.id === id)

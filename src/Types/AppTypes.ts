@@ -8,10 +8,12 @@ export type CastMember = {
 }
 
 export interface CastState {
-    cast: CastMember[]
+    cast: CastMember[];
+    groups: string[];
 }
 
 export type CueType = {
+    id: string;
     cuePoint: string;
     location: string;
     notes: string;
