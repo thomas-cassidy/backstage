@@ -1,52 +1,58 @@
-import { configureStore, combineReducers, CombinedState } from '@reduxjs/toolkit'
-// import { persistReducer } from 'redux-persist'
-// import { PersistConfig } from 'redux-persist/es/types'
-// import AsyncStorage from '@react-native-async-storage/async-storage'
-// import storage from 'redux-persist/lib/storage'
-import castSliceReducer from './cast'
-import plotsSliceReducer, { PlotState } from './plots'
-import todosSliceReducer from './todos'
-import { testSliceReducer, testState } from './test'
-import { TodosState } from '../Util/InitialState'
-import { CastState } from '../Types/AppTypes'
-import { ThunkMiddleware } from 'redux-thunk'
-
-// const persistConfig: PersistConfig<any> = {
-//     key: 'backstagePersist',
-//     storage: AsyncStorage
-// }
-
-type combinedState = CombinedState<{
-    cast: CastState;
-    plots: PlotState;
-    todos: TodosState;
-    test: testState;
-}>
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { ThunkMiddleware } from "redux-thunk";
+import castSliceReducer from "./cast";
+import plotsSliceReducer from "./plots";
+import todosSliceReducer from "./todos";
+import authSliceReducer from "./auth";
+import userSliceReducer, { SET_USER } from "./user";
+import { User } from "../Types/AppTypes";
+import { fetchShowNames } from "../Util/FetchShowNames";
 
 const rootReducer = combineReducers({
+    auth: authSliceReducer,
+    user: userSliceReducer,
     cast: castSliceReducer,
     plots: plotsSliceReducer,
     todos: todosSliceReducer,
-    test: testSliceReducer,
-})
+});
 
-// const persistedReducer = persistReducer(persistConfig, rootReducer)
+export type RootStateType = ReturnType<typeof rootReducer>;
 
-const ACTION_LOGGER: ThunkMiddleware = ({ dispatch, getState }) => {
+const ACTION_LOGGER: ThunkMiddleware<RootStateType> = ({ getState }) => {
     return (next) => {
-        return (action) => {
-            console.log(action.type)
-            return next(action)
-        }
-    }
-}
+        return async (action) => {
+            console.log(action.type);
+            return next(action);
+        };
+    };
+};
+
+const SET_USER_MIDDLEWARE: ThunkMiddleware<RootStateType> = ({
+    dispatch,
+    getState,
+}) => {
+    return (next) => {
+        return async (action) => {
+            if (action.type === "login/fulfilled") {
+                let userData = action.payload.user as User;
+                let shows = await fetchShowNames(
+                    userData,
+                    action.payload.ACCESS_TOKEN
+                );
+                dispatch(SET_USER({ ...userData, shows }));
+            }
+            return next(action);
+        };
+    };
+};
 
 const store = configureStore({
     reducer: rootReducer,
-    middleware: getDefault => getDefault().concat(ACTION_LOGGER)
-})
+    middleware: (getDefault) =>
+        getDefault().concat([ACTION_LOGGER, SET_USER_MIDDLEWARE]),
+});
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
 
-export default store
+export default store;

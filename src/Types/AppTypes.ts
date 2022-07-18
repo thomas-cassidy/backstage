@@ -1,3 +1,11 @@
+export type User = {
+    _id: string;
+    name: string;
+    email: string;
+    password?: string;
+    shows: { _id: string; name: string }[];
+};
+
 export type CastMember = {
     name: string;
     role: string;
@@ -5,7 +13,7 @@ export type CastMember = {
     group?: string;
     id: string;
     image?: string;
-}
+};
 
 export interface CastState {
     cast: CastMember[];
@@ -18,16 +26,16 @@ export type CueType = {
     location: string;
     notes: string;
     castMembers: string[];
-}
+};
 
 export interface Plot {
     name: string;
     cues: CueType[];
-    id: number;
+    id: string;
 }
 
 export type ToDo = {
     name: string;
     complete: boolean;
     id: number;
-}
+};

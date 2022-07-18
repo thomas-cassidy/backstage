@@ -1,16 +1,12 @@
 import React from "react";
 import {
-    View,
     Text,
     StyleSheet,
     TouchableOpacityProps,
     GestureResponderEvent,
-    Dimensions,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { GlobalColors, GlobalStyles, Sizes } from "../Util/GlobalStyles";
-
-const { width } = Dimensions.get("window");
 
 interface Props extends TouchableOpacityProps {
     label: string;
@@ -46,6 +42,7 @@ const RoundButton = ({
             </TouchableOpacity>
         );
     }
+
     return (
         <TouchableOpacity
             style={[
@@ -65,9 +62,10 @@ export default RoundButton;
 
 const styles = StyleSheet.create({
     container: {
-        padding: Sizes.s,
+        paddingVertical: Sizes.xs,
+        paddingHorizontal: Sizes.s,
         marginBottom: Sizes.s,
-        borderRadius: Sizes.l,
+        borderRadius: Sizes.m,
         alignItems: "center",
         // minWidth: width * 0.7,
     },

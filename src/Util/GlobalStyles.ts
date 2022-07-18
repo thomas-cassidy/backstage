@@ -1,10 +1,16 @@
 import { StyleSheet } from "react-native";
 
+// export const GlobalColors = {
+//     background: "#020f56",
+//     text_primary: "#fff",
+//     secondary: "#ffb600",
+//     tertiary: "#df160d",
+// };
 export const GlobalColors = {
-    background: "#020f56",
+    background: "hsl(220, 13%, 18%)",
     text_primary: "#fff",
     secondary: "#ffb600",
-    tertiary: "#df160d",
+    tertiary: "pink",
 };
 
 export const EditColors: typeof GlobalColors = {
@@ -14,7 +20,7 @@ export const EditColors: typeof GlobalColors = {
     tertiary: "df160d",
 };
 
-export const font_main = "Helvetica Neue";
+export const font_main = "Futura";
 
 export const Sizes = {
     xs: 8,
@@ -33,18 +39,18 @@ export const GlobalStyles = StyleSheet.create({
     },
     text_label: {
         fontFamily: font_main,
-        fontSize: 18,
+        fontSize: 16,
         color: GlobalColors.text_primary,
         opacity: 0.7,
     },
     text_small: {
         fontFamily: font_main,
-        fontSize: 18,
+        fontSize: 16,
         color: GlobalColors.text_primary,
     },
     text_medium: {
         fontFamily: font_main,
-        fontSize: 24,
+        fontSize: 20,
         color: GlobalColors.text_primary,
     },
     text_large: {
