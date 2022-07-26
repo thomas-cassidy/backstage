@@ -30,6 +30,8 @@ export const Sizes = {
     xl: 40,
 };
 
+export const FORM_LINE_HEIGHT = 50;
+
 export const GlobalStyles = StyleSheet.create({
     container: {
         flex: 1,

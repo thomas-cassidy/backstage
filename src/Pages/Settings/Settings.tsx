@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import { LOGOUT_ASYNC } from "../../Redux/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlobalStyles } from "../../Util/GlobalStyles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { storePersistor } from "../../Redux/store";
 const { container } = GlobalStyles;
 
 type Props = {};
@@ -25,10 +25,8 @@ const Settings = (props: Props) => {
                 onPress={async () => console.log(state)}
             />
             <RoundButton
-                label='Check Storage'
-                onPress={async () =>
-                    console.log(await AsyncStorage.getItem("THEATRE_APP_STATE"))
-                }
+                label='Purge data'
+                onPress={async () => await storePersistor.purge()}
             />
         </SafeAreaView>
     );

@@ -3,18 +3,21 @@ import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { LoadAssets } from "./src/Components";
 import { Provider } from "react-redux";
-import store from "./src/Redux/store";
+import store, { storePersistor } from "./src/Redux/store";
 import Navigator from "./src/Util/Navigator";
+import { PersistGate } from "redux-persist/integration/react";
 
 export default function App() {
     return (
-        <Provider store={store}>
-            <LoadAssets>
-                <StatusBar style={"light"} />
-                <NavigationContainer>
-                    <Navigator />
-                </NavigationContainer>
-            </LoadAssets>
-        </Provider>
+        <PersistGate persistor={storePersistor}>
+            <Provider store={store}>
+                <LoadAssets>
+                    <StatusBar style={"light"} />
+                    <NavigationContainer>
+                        <Navigator />
+                    </NavigationContainer>
+                </LoadAssets>
+            </Provider>
+        </PersistGate>
     );
 }

@@ -1,4 +1,5 @@
 export type User = {
+    __v: number;
     _id: string;
     name: string;
     email: string;

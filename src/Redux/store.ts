@@ -1,22 +1,44 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { ThunkMiddleware } from "redux-thunk";
+import {
+    FLUSH,
+    PAUSE,
+    PERSIST,
+    persistReducer,
+    persistStore,
+    PURGE,
+    REGISTER,
+    REHYDRATE,
+} from "redux-persist";
+
 import castSliceReducer from "./cast";
 import plotsSliceReducer from "./plots";
 import todosSliceReducer from "./todos";
 import authSliceReducer from "./auth";
-import userSliceReducer, { SET_USER } from "./user";
-import { User } from "../Types/AppTypes";
-import { fetchShowNames } from "../Util/FetchShowNames";
+import userSliceReducer from "./user";
+import statusSliceReducer from "./status";
+import showSliceReducer from "./show";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const rootReducer = combineReducers({
+    status: statusSliceReducer,
     auth: authSliceReducer,
     user: userSliceReducer,
+    show: showSliceReducer,
     cast: castSliceReducer,
     plots: plotsSliceReducer,
     todos: todosSliceReducer,
 });
 
 export type RootStateType = ReturnType<typeof rootReducer>;
+
+const persistRootReducer = persistReducer(
+    {
+        key: "rootReducer",
+        storage: AsyncStorage,
+    },
+    rootReducer
+);
 
 const ACTION_LOGGER: ThunkMiddleware<RootStateType> = ({ getState }) => {
     return (next) => {
@@ -27,30 +49,23 @@ const ACTION_LOGGER: ThunkMiddleware<RootStateType> = ({ getState }) => {
     };
 };
 
-const SET_USER_MIDDLEWARE: ThunkMiddleware<RootStateType> = ({
-    dispatch,
-    getState,
-}) => {
-    return (next) => {
-        return async (action) => {
-            if (action.type === "login/fulfilled") {
-                let userData = action.payload.user as User;
-                let shows = await fetchShowNames(
-                    userData,
-                    action.payload.ACCESS_TOKEN
-                );
-                dispatch(SET_USER({ ...userData, shows }));
-            }
-            return next(action);
-        };
-    };
-};
-
 const store = configureStore({
-    reducer: rootReducer,
+    reducer: persistRootReducer,
     middleware: (getDefault) =>
-        getDefault().concat([ACTION_LOGGER, SET_USER_MIDDLEWARE]),
+        getDefault({
+            serializableCheck: {
+                ignoredActions: [
+                    FLUSH,
+                    REHYDRATE,
+                    PAUSE,
+                    PERSIST,
+                    PURGE,
+                    REGISTER,
+                ],
+            },
+        }).concat([ACTION_LOGGER]),
 });
+export const storePersistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

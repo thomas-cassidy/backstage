@@ -4,7 +4,6 @@ import {
     Text,
     TextInput,
     StyleSheet,
-    NativeSyntheticEvent,
     TextInputIOSProps,
 } from "react-native";
 import { GlobalStyles, Sizes } from "../Util/GlobalStyles";
@@ -30,6 +29,7 @@ const FormLine = ({
         <View style={styles.formLine}>
             <Text style={styles.text_label}>{label}</Text>
             <TextInput
+                autoCapitalize='none'
                 textContentType={textContentType}
                 editable={editing}
                 style={styles.inputField}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -6,7 +6,6 @@ import {
     Image,
     Dimensions,
     StyleSheet,
-    Alert,
 } from "react-native";
 import { RouteProp } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -22,7 +21,6 @@ import {
     REMOVE_CASTMEMBER,
 } from "../../Redux/cast";
 import { RootState } from "../../Redux/store";
-import { getSomething } from "../../Redux/test/Test";
 
 const { width } = Dimensions.get("window");
 
@@ -87,13 +85,6 @@ const CastMemberProfile = ({ route, navigation }: Props) => {
         : GlobalColors.background;
     const styles = makeStyles(color, background);
 
-    useEffect(() => {
-        return () => {
-            console.log("byeee");
-            dispatch(getSomething()).then(() => console.log("done"));
-        };
-    }, []);
-
     return (
         <SafeAreaView style={styles.container}>
             <PageHeader
@@ -117,25 +108,19 @@ const CastMemberProfile = ({ route, navigation }: Props) => {
                 <FormLine
                     label='Role'
                     {...{ color, editing }}
-                    onChange={(e) =>
-                        handleFormChange("role", e.nativeEvent.text)
-                    }
+                    onChange={(e) => handleFormChange("role", e)}
                     value={castMember.role}
                 />
                 <FormLine
                     label='Name'
                     {...{ color, editing }}
-                    onChange={(e) =>
-                        handleFormChange("name", e.nativeEvent.text)
-                    }
+                    onChange={(e) => handleFormChange("name", e)}
                     value={castMember.name}
                 />
                 <FormLine
                     label='Group'
                     {...{ color, editing }}
-                    onChange={(e) =>
-                        handleFormChange("group", e.nativeEvent.text)
-                    }
+                    onChange={(e) => handleFormChange("group", e)}
                     value={castMember.group ? castMember.group : ""}
                 />
                 <View style={styles.notesSection}>

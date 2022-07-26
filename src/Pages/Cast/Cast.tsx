@@ -1,118 +1,106 @@
-import React, { useEffect, useState } from 'react'
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { PageHeader, RoundButton } from '../../Components'
-import { GlobalColors, GlobalStyles, Sizes } from '../../Util/GlobalStyles'
-import CastMemberSmall from './CastMemberSmall'
-import { useAppDispatch, useAppSelector } from '../../Redux/hooks'
-import { CastMember } from '../../Types/AppTypes'
-import { StackNavigationProp } from '@react-navigation/stack'
-import { AppRoutes } from '../../Util/Routes'
+import React, { useEffect, useState } from "react";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { PageHeader, RoundButton } from "../../Components";
+import { GlobalColors, GlobalStyles, Sizes } from "../../Util/GlobalStyles";
+import CastMemberSmall from "./CastMemberSmall";
+import { useAppSelector } from "../../Redux/hooks";
+import { CastMember } from "../../Types/AppTypes";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { AppRoutes } from "../../Util/Routes";
 
-const { width,
-    height } = Dimensions.get('window')
+const { width } = Dimensions.get("window");
 
 interface Props {
-    navigation: StackNavigationProp<AppRoutes, 'Cast'>
+    navigation: StackNavigationProp<AppRoutes, "Cast">;
 }
 
 interface RenderList {
-    [group: string]: CastMember[]
+    [group: string]: CastMember[];
 }
 
 const Cast = ({ navigation }: Props) => {
-    const { cast } = useAppSelector(state => state.cast)
-
-    // const [editing, setEditing] = useState(false)
+    const { cast } = useAppSelector((state) => state.cast);
 
     const [castRenderList, setCastRenderList] = useState<RenderList>(() => {
-        let state: RenderList = { uncategorised: [] }
-        cast.map(c => {
+        let state: RenderList = { uncategorised: [] };
+        cast.map((c) => {
             if (c.group === undefined) {
-                return state.uncategorised.push(c)
-            }
-            else if (state[c.group]) {
-                state[c.group].push(c)
-            }
-            else state[c.group] = [c]
-        })
-        return state
-    })
+                return state.uncategorised.push(c);
+            } else if (state[c.group]) {
+                state[c.group].push(c);
+            } else state[c.group] = [c];
+        });
+        return state;
+    });
 
     useEffect(() => {
         setCastRenderList(() => {
-            let state: RenderList = { uncategorised: [] }
-            cast.map(c => {
+            let state: RenderList = { uncategorised: [] };
+            cast.map((c) => {
                 if (c.group === undefined) {
-                    return state.uncategorised.push(c)
-                }
-                else if (state[c.group]) {
-                    state[c.group].push(c)
-                }
-                else state[c.group] = [c]
-            })
-            return state
-        })
-    }, [cast])
+                    return state.uncategorised.push(c);
+                } else if (state[c.group]) {
+                    state[c.group].push(c);
+                } else state[c.group] = [c];
+            });
+            return state;
+        });
+    }, [cast]);
 
     return (
         <SafeAreaView style={GlobalStyles.container}>
-            <PageHeader label={'Cast'} />
+            <PageHeader label={"Cast"} back />
 
             <ScrollView
                 style={styles.horiz_scroll}
                 horizontal
-                decelerationRate={'fast'}
+                decelerationRate={"fast"}
                 snapToInterval={width}
             >
-                {
-                    Object.keys(castRenderList).map((category, index) => {
-                        if (castRenderList[category].length === 0) return
-                        return (
-                            <View
-
-                                style={styles.page}
-                                key={index}
-                            >
-                                <Text
-                                    style={styles.groupHeader}>
-                                    {category != 'uncategorised' && category}
-                                </Text>
-                                <ScrollView style={{ flex: 1 }}>
-                                    {
-                                        castRenderList[category].map((castMember, i) => (
-                                            <CastMemberSmall key={i} {...{ castMember }} />
-                                        ))
-                                    }
-                                </ScrollView>
-                            </View
-                            >
-                        )
-                    })
-                }
+                {Object.keys(castRenderList).map((category, index) => {
+                    if (castRenderList[category].length === 0) return;
+                    return (
+                        <View style={styles.page} key={index}>
+                            <Text style={styles.groupHeader}>
+                                {category != "uncategorised" && category}
+                            </Text>
+                            <ScrollView style={{ flex: 1 }}>
+                                {castRenderList[category].map(
+                                    (castMember, i) => (
+                                        <CastMemberSmall
+                                            key={i}
+                                            {...{ castMember }}
+                                        />
+                                    )
+                                )}
+                            </ScrollView>
+                        </View>
+                    );
+                })}
             </ScrollView>
             <RoundButton
-                label={'Add Cast Member'}
-                onPress={() => navigation.navigate('CastProfile', { id: '-1' })}
+                label={"Add Cast Member"}
+                onPress={() => navigation.navigate("CastProfile", { id: "-1" })}
             />
         </SafeAreaView>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     horiz_scroll: {
         flex: 1,
         width,
-        backgroundColor: GlobalColors.background
+        backgroundColor: GlobalColors.background,
     },
     page: {
         flex: 1,
     },
     groupHeader: {
         ...GlobalStyles.text_large,
-        alignSelf: 'flex-start',
+        alignSelf: "flex-start",
         marginLeft: Sizes.m,
-    }
-})
+    },
+});
 
-export default Cast
+export default Cast;
