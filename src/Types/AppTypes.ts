@@ -7,6 +7,17 @@ export type User = {
     shows: { _id: string; name: string }[];
 };
 
+export type Show = {
+    [key: string]: any;
+    _id: string;
+    name: string;
+    cast?: CastMember[];
+    plots?: Plot[];
+    todos?: ToDo[];
+    owner?: string;
+    accessList?: string[];
+};
+
 export type CastMember = {
     name: string;
     role: string;

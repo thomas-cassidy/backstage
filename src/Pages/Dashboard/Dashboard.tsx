@@ -5,8 +5,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { BarLink, Footer, PageHeader } from "../../Components";
 import { AppRoutes } from "../../Util/Routes";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useAppSelector } from "../../Redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import { ScrollView } from "react-native-gesture-handler";
+import { GET_SHOW_ASYNC } from "../../Redux/show";
 
 const { container, text_medium } = GlobalStyles;
 
@@ -16,6 +17,7 @@ type Props = {
 
 const Dashboard = ({ navigation }: Props) => {
     const { user } = useAppSelector((state) => state.user);
+    const dispatch = useAppDispatch();
 
     if (!user) {
         return navigation.goBack();
@@ -40,7 +42,9 @@ const Dashboard = ({ navigation }: Props) => {
                         <BarLink
                             label={show.name}
                             key={show._id}
-                            onPress={() => navigation.navigate("Home")}
+                            onPress={() =>
+                                dispatch(GET_SHOW_ASYNC({ showId: show._id }))
+                            }
                         />
                     ))}
                 </ScrollView>

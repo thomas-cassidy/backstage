@@ -71,6 +71,9 @@ const auth = createSlice({
         CLEAR_LOADING: (state) => {
             state.status = "idle";
         },
+        SET_ACCESS_TOKEN: (state, { payload }: PayloadAction<string>) => {
+            state.ACCESS_TOKEN = payload;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(LOGIN_ASYNC.pending, (state, action) => {
@@ -106,6 +109,7 @@ const auth = createSlice({
     },
 });
 
-export const { SET_LOGGED_IN, CLEAR_ERROR, CLEAR_LOADING } = auth.actions;
+export const { SET_LOGGED_IN, CLEAR_ERROR, CLEAR_LOADING, SET_ACCESS_TOKEN } =
+    auth.actions;
 
 export default auth.reducer;

@@ -6,6 +6,7 @@ import { LOGOUT_ASYNC } from "../../Redux/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlobalStyles } from "../../Util/GlobalStyles";
 import { storePersistor } from "../../Redux/store";
+import { refreshAccessToken } from "../../Util/RefreshAccessToken";
 const { container } = GlobalStyles;
 
 type Props = {};
@@ -27,6 +28,10 @@ const Settings = (props: Props) => {
             <RoundButton
                 label='Purge data'
                 onPress={async () => await storePersistor.purge()}
+            />
+            <RoundButton
+                label='Refresh Access'
+                onPress={async () => await refreshAccessToken()}
             />
         </SafeAreaView>
     );
