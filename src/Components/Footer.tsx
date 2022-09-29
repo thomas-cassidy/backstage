@@ -26,21 +26,21 @@ const Footer = () => {
             <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
                 <FontAwesomeIcon
                     icon={faPlus}
-                    size={50}
+                    size={40}
                     color={GlobalColors.secondary}
                 />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
                 <FontAwesomeIcon
                     icon={faSearch}
-                    size={50}
+                    size={40}
                     color={GlobalColors.secondary}
                 />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
                 <FontAwesomeIcon
                     icon={faGear}
-                    size={50}
+                    size={40}
                     color={GlobalColors.secondary}
                 />
             </TouchableOpacity>

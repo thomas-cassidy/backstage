@@ -12,29 +12,35 @@ const { container } = GlobalStyles;
 type Props = {};
 
 const Settings = (props: Props) => {
-    const dispatch = useAppDispatch();
-    const state = useAppSelector((state) => state);
-    return (
-        <SafeAreaView style={container}>
-            <Text>Settings</Text>
-            <RoundButton
-                label='Log Out'
-                onPress={() => dispatch(LOGOUT_ASYNC())}
-            />
-            <RoundButton
-                label='Check State'
-                onPress={async () => console.log(state)}
-            />
-            <RoundButton
-                label='Purge data'
-                onPress={async () => await storePersistor.purge()}
-            />
-            <RoundButton
-                label='Refresh Access'
-                onPress={async () => await refreshAccessToken()}
-            />
-        </SafeAreaView>
-    );
+  const dispatch = useAppDispatch();
+  const state = useAppSelector((state) => state);
+  return (
+    <SafeAreaView style={container}>
+      <Text>Settings</Text>
+      <RoundButton label="Log Out" onPress={() => dispatch(LOGOUT_ASYNC())} />
+      <RoundButton
+        label="Check State"
+        onPress={async () => console.log(state)}
+      />
+      <RoundButton
+        label="Purge data"
+        onPress={async () => {
+          await storePersistor.purge();
+        }}
+      />
+      <RoundButton
+        label="Refresh Access"
+        onPress={async () => {
+          const NEW_ACCESS_TOKEN = await refreshAccessToken();
+          console.log(NEW_ACCESS_TOKEN);
+        }}
+      />
+      <RoundButton
+        label="Show Access Token"
+        onPress={async () => console.log(state.auth.ACCESS_TOKEN)}
+      />
+    </SafeAreaView>
+  );
 };
 
 export default Settings;

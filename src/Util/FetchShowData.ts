@@ -1,14 +1,12 @@
-import axios from "axios";
-import { API_URI } from "./InitialState";
+// import axios from "axios";
+import { AXIOS_API } from "./Axios";
 
 export const fetchShowData = async (showId: string, ACCESS_TOKEN: string) => {
-    console.log("fetchshowdata");
+  console.log("fetchshowdata");
 
-    let response = await axios.get(`${API_URI}/shows/${showId}`, {
-        headers: {
-            "x-access-token": ACCESS_TOKEN,
-        },
-    });
+  let response = await AXIOS_API.get(`/shows/${showId}`, {
+    headers: { "x-access-token": ACCESS_TOKEN },
+  });
 
-    return response.data;
+  return response.data;
 };

@@ -8,16 +8,16 @@ import Navigator from "./src/Util/Navigator";
 import { PersistGate } from "redux-persist/integration/react";
 
 export default function App() {
-    return (
-        <PersistGate persistor={storePersistor}>
-            <Provider store={store}>
-                <LoadAssets>
-                    <StatusBar style={"light"} />
-                    <NavigationContainer>
-                        <Navigator />
-                    </NavigationContainer>
-                </LoadAssets>
-            </Provider>
-        </PersistGate>
-    );
+  return (
+    <PersistGate persistor={storePersistor}>
+      <Provider store={store}>
+        <LoadAssets>
+          <StatusBar style={"light"} />
+          <NavigationContainer>
+            <Navigator />
+          </NavigationContainer>
+        </LoadAssets>
+      </Provider>
+    </PersistGate>
+  );
 }
