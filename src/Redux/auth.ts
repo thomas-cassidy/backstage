@@ -96,7 +96,7 @@ const auth = createSlice({
       return { ...state, status: "loading" };
     });
     builder.addCase(LOGIN_ASYNC.fulfilled, (state, { payload }) => {
-      console.log("login success", payload);
+      // console.log("login success", payload);
       return {
         ...state,
         status: "idle",

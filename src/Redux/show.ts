@@ -8,11 +8,13 @@ import { RootState } from "./store";
 import { SET_TODOS } from "./todos";
 
 interface ShowState {
+  _id: string;
   name: string;
   owner: string | undefined;
   accessList: string[] | undefined;
 }
 const initialState: ShowState = {
+  _id: "",
   name: "No show selected",
   owner: undefined,
   accessList: undefined,
@@ -43,8 +45,9 @@ export const GET_SHOW_ASYNC = createAsyncThunk<
       dispatch(SET_PLOTS(data.show.plots));
       dispatch(SET_TODOS(data.show.todos));
       dispatch(SET_LOADED());
-      // console.log("redux/show/GET_SHOW_ASYNC", data.show.plots);
+      console.log("redux/show/GET_SHOW_ASYNC", data.show._id);
       return {
+        _id: data.show._id,
         name: data.show.name,
         owner: data.show.owner,
         accessList: data.show.accessList,

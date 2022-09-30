@@ -5,3 +5,4 @@ export { default as LoadAssets } from "./LoadAssets";
 export { default as RadioButton } from "./RadioButton";
 export { default as FormLine } from "./FormLine";
 export { default as Footer } from "./Footer";
+export { default as ImagePicker } from "./ImagePicker";

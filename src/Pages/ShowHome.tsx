@@ -16,10 +16,10 @@ const Home = ({ navigation }: Props) => {
   useEffect(() => {
     navigation.addListener("beforeRemove", (e) => {
       e.preventDefault();
-      Alert.alert("What you've got to understand is", "", [
+      Alert.alert("Are you sure you want to exit the show?", "", [
         { text: "Cancel", style: "cancel" },
         {
-          text: "OK",
+          text: "Yes",
           style: "destructive",
           onPress: () => {
             navigation.dispatch(e.data.action);

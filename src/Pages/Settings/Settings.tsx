@@ -1,6 +1,5 @@
-import { Text } from "react-native";
 import React from "react";
-import { RoundButton } from "../../Components";
+import { PageHeader, RoundButton } from "../../Components";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import { LOGOUT_ASYNC } from "../../Redux/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,7 +15,7 @@ const Settings = (props: Props) => {
   const state = useAppSelector((state) => state);
   return (
     <SafeAreaView style={container}>
-      <Text>Settings</Text>
+      <PageHeader label="Settings" />
       <RoundButton label="Log Out" onPress={() => dispatch(LOGOUT_ASYNC())} />
       <RoundButton
         label="Check State"

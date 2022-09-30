@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import {
   Dashboard,
@@ -12,22 +12,20 @@ import {
   Login,
   Register,
   Settings,
+  NewShow,
 } from "../Pages";
 
-import { useAppDispatch, useAppSelector } from "../Redux/hooks";
+import { useAppSelector } from "../Redux/hooks";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
-import { setUpInterceptors } from "./Axios";
+import { useInterceptors } from "./Axios";
+import { ImagePicker } from "../Components";
 
 const MainStack = createStackNavigator();
 
 const Navigator = () => {
   const auth = useAppSelector((state) => state.auth);
   const status = useAppSelector((state) => state.status);
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    setUpInterceptors(auth, dispatch);
-  }, []);
+  useInterceptors();
 
   return (
     <>
@@ -35,6 +33,10 @@ const Navigator = () => {
         screenOptions={{
           headerShown: false,
         }}
+        // screenListeners={{
+        //   blur: (e) => console.log(e.type),
+        //   beforeRemove: (e) => console.log(e.type),
+        // }}
       >
         {!auth.loggedIn ? (
           <>
@@ -44,6 +46,11 @@ const Navigator = () => {
         ) : (
           <>
             <MainStack.Screen component={Dashboard} name={"Dashboard"} />
+            <MainStack.Screen
+              component={NewShow}
+              name={"NewShow"}
+              options={{ presentation: "modal" }}
+            />
             <MainStack.Screen component={Home} name={"Home"} />
             <MainStack.Screen component={Cast} name={"Cast"} />
             <MainStack.Screen
@@ -64,6 +71,11 @@ const Navigator = () => {
             />
             <MainStack.Screen component={Todos} name={"Todos"} />
             <MainStack.Screen component={Settings} name={"Settings"} />
+            <MainStack.Screen
+              component={ImagePicker}
+              name={"ImagePicker"}
+              options={{ presentation: "modal" }}
+            />
           </>
         )}
       </MainStack.Navigator>

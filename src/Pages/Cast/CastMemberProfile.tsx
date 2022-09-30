@@ -6,6 +6,8 @@ import {
   Image,
   Dimensions,
   StyleSheet,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 import { RouteProp } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -14,7 +16,7 @@ import { GlobalColors, GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import { AppRoutes } from "../../Util/Routes";
 import { FormLine, PageHeader, RoundButton } from "../../Components";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
-import { ADD_CASTMEMBER, REMOVE_CASTMEMBER } from "../../Redux/cast";
+import { UPDATE_CASTMEMBER_ASYNC } from "../../Redux/cast";
 import { RootState } from "../../Redux/store";
 import { CastMember } from "../../Types/AppTypes";
 import { API_URI } from "../../Util/InitialState";
@@ -54,10 +56,7 @@ const CastMemberProfile = ({ route, navigation }: Props) => {
         }
   );
 
-  const handleFormChange = (
-    field: "name" | "role" | "notes" | "category",
-    value: string
-  ) => {
+  const handleFormChange = (field: "name" | "role" | "notes" | "category", value: string) => {
     setHasChanges(true);
     setTempCastMember((prev) => {
       let newState = { ...prev };
@@ -69,15 +68,31 @@ const CastMemberProfile = ({ route, navigation }: Props) => {
   useEffect(() => {
     if (!editing && hasChanges) {
       console.log("commit");
-      //comit changes. dispatch(UPDATE_CASTMEMBER_ASYNC(tempCastMember))??
+      dispatch(UPDATE_CASTMEMBER_ASYNC(tempCastMember));
       setHasChanges(false);
     }
   }, [editing]);
 
+  useEffect(() => {
+    navigation.addListener("beforeRemove", (e) => {
+      if (hasChanges) {
+        e.preventDefault();
+        Alert.alert("You have unsaved changes", "", [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Discard",
+            style: "destructive",
+            onPress: () => {
+              navigation.dispatch(e.data.action);
+            },
+          },
+        ]);
+      }
+    });
+  }, []);
+
   const color = editing ? GlobalColors.background : GlobalColors.text_primary;
-  const background = editing
-    ? GlobalColors.text_primary
-    : GlobalColors.background;
+  const background = editing ? GlobalColors.text_primary : GlobalColors.background;
   const styles = makeStyles(color, background);
 
   return (
@@ -88,26 +103,33 @@ const CastMemberProfile = ({ route, navigation }: Props) => {
         edit
         onEdit={() => setEditing((prev) => !prev)}
       />
-      <Image
-        source={
-          tempCastMember.images?.length
-            ? {
-                uri: `${API_URI}/images/${tempCastMember.images[0]}`,
-                headers: {
-                  "x-access-token": ACCESS_TOKEN,
-                },
-              }
-            : {
-                uri: "https://images-na.ssl-images-amazon.com/images/I/51+E4VHsZ6L.jpg",
-              }
-        }
-        onError={(err) => {
-          dispatch(REFRESH_ACCESS_TOKEN());
-        }}
-        height={120}
-        width={120}
-        style={styles.image}
-      />
+
+      <TouchableOpacity
+        disabled={!editing}
+        activeOpacity={0.8}
+        onPress={() => navigation.navigate("ImagePicker")}
+      >
+        <Image
+          source={
+            tempCastMember.images?.length
+              ? {
+                  uri: `${API_URI}/images/${tempCastMember.images[0]}`,
+                  headers: {
+                    "x-access-token": ACCESS_TOKEN,
+                  },
+                }
+              : {
+                  uri: "https://images-na.ssl-images-amazon.com/images/I/51+E4VHsZ6L.jpg",
+                }
+          }
+          onError={(err) => {
+            dispatch(REFRESH_ACCESS_TOKEN());
+          }}
+          height={120}
+          width={120}
+          style={styles.image}
+        />
+      </TouchableOpacity>
 
       <View style={styles.form}>
         <FormLine
@@ -144,7 +166,7 @@ const CastMemberProfile = ({ route, navigation }: Props) => {
         <RoundButton
           label="Save"
           onPress={async () => {
-            await dispatch(ADD_CASTMEMBER(tempCastMember));
+            // await dispatch(ADD_CASTMEMBER(tempCastMember));
             navigation.goBack();
           }}
         />
@@ -154,9 +176,9 @@ const CastMemberProfile = ({ route, navigation }: Props) => {
           label="Delete Cast Member"
           altColor
           onPress={async () => {
-            !newCastMember
-              ? await dispatch(REMOVE_CASTMEMBER(tempCastMember))
-              : null;
+            // !newCastMember
+            //   ? await dispatch(REMOVE_CASTMEMBER(tempCastMember))
+            //   : null;
             navigation.goBack();
           }}
         />

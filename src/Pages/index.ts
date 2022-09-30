@@ -6,4 +6,4 @@ export { PlotPage } from "./Plot";
 export { default as Home } from "./ShowHome";
 export { Todos } from "./Todos";
 export { Settings } from "./Settings";
-export { Dashboard } from "./Dashboard";
+export { Dashboard, NewShow } from "./Dashboard";
