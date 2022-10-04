@@ -1,25 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface IStatusState {
-  loading: boolean;
+    loading: boolean;
 }
 
 const initialState: IStatusState = {
-  loading: false,
+    loading: false,
 };
 
 const status = createSlice({
-  name: "status",
-  initialState,
+    name: "status",
+    initialState,
 
-  reducers: {
-    SET_LOADING: (state) => {
-      return { loading: true };
+    reducers: {
+        SET_LOADING: (state) => {
+            return { loading: true };
+        },
+        SET_LOADED: (state) => {
+            return { loading: false };
+        },
     },
-    SET_LOADED: (state) => {
-      return { loading: false };
-    },
-  },
 });
 
 export const { SET_LOADED, SET_LOADING } = status.actions;

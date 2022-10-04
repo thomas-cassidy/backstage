@@ -7,36 +7,36 @@ import { GlobalStyles } from "../Util/GlobalStyles";
 import { AppRoutes } from "../Util/Routes";
 
 interface Props {
-  navigation: StackNavigationProp<AppRoutes, "Home">;
+    navigation: StackNavigationProp<AppRoutes, "Home">;
 }
 
 const Home = ({ navigation }: Props) => {
-  const show = useAppSelector((state) => state.show);
+    const show = useAppSelector((state) => state.show);
 
-  useEffect(() => {
-    navigation.addListener("beforeRemove", (e) => {
-      e.preventDefault();
-      Alert.alert("Are you sure you want to exit the show?", "", [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Yes",
-          style: "destructive",
-          onPress: () => {
-            navigation.dispatch(e.data.action);
-          },
-        },
-      ]);
-    });
-  }, []);
+    useEffect(() => {
+        navigation.addListener("beforeRemove", (e) => {
+            e.preventDefault();
+            Alert.alert("Are you sure you want to exit the show?", "", [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Yes",
+                    style: "destructive",
+                    onPress: () => {
+                        navigation.dispatch(e.data.action);
+                    },
+                },
+            ]);
+        });
+    }, []);
 
-  return (
-    <SafeAreaView style={GlobalStyles.container}>
-      <PageHeader
-        back
-        backLabel="Exit Show"
-        onBack={() => navigation.goBack()}
-      />
-      {/* <Image
+    return (
+        <SafeAreaView style={GlobalStyles.container}>
+            <PageHeader
+                back
+                backLabel='Exit Show'
+                onBack={() => navigation.goBack()}
+            />
+            {/* <Image
         source={require("../../assets/NT.png")}
         style={{
           width: width - Sizes.l,
@@ -45,20 +45,27 @@ const Home = ({ navigation }: Props) => {
         }}
         width={width}
       /> */}
-      <Text style={GlobalStyles.page_header}>{show.name}</Text>
-      <ScrollView style={{ flex: 1 }}>
-        <BarLink label={"Cast"} onPress={() => navigation.navigate("Cast")} />
-        <BarLink
-          label={"Cue Sheets"}
-          onPress={() => navigation.navigate("CueSheets")}
-        />
-        <BarLink
-          label={"To Dos"}
-          onPress={() => navigation.navigate("Todos")}
-        />
-      </ScrollView>
-    </SafeAreaView>
-  );
+            <Text style={GlobalStyles.page_header}>{show.name}</Text>
+            <ScrollView style={{ flex: 1 }}>
+                <BarLink
+                    label={"Cast"}
+                    onPress={() => navigation.navigate("Cast")}
+                />
+                <BarLink
+                    label={"Cue Sheets"}
+                    onPress={() => navigation.navigate("CueSheets")}
+                />
+                <BarLink
+                    label={"To Dos"}
+                    onPress={() => navigation.navigate("Todos")}
+                />
+                <BarLink
+                    label={"Settings"}
+                    onPress={() => navigation.navigate("ShowSettings")}
+                />
+            </ScrollView>
+        </SafeAreaView>
+    );
 };
 
 export default Home;
