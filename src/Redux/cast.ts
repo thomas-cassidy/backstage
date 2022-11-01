@@ -71,11 +71,20 @@ export const castSlice = createSlice({
                 groups: allGroups,
             };
         },
+        ADD_GROUP: ({ groups }, { payload }: PayloadAction<string>) => {
+            groups.unshift(payload);
+        },
         DELETE_GROUP: (
             { cast, groups },
             { payload }: PayloadAction<string>
         ) => {
             return { cast, groups: groups.filter((g) => g !== payload) };
+        },
+        UPDATE_GROUP: (
+            { groups },
+            { payload }: PayloadAction<{ index: number; text: string }>
+        ) => {
+            groups[payload.index] = payload.text;
         },
     },
     extraReducers: (builder) => {
@@ -92,6 +101,7 @@ export const castSlice = createSlice({
     },
 });
 
-export const { SET_CAST, DELETE_GROUP } = castSlice.actions;
+export const { SET_CAST, ADD_GROUP, DELETE_GROUP, UPDATE_GROUP } =
+    castSlice.actions;
 
 export default castSlice.reducer;

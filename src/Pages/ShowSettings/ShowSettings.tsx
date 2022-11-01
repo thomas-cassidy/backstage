@@ -1,18 +1,30 @@
-import { ScrollView, Text, View, StyleSheet } from "react-native";
-import React, { useEffect, useState } from "react";
+import {
+    ScrollView,
+    Text,
+    View,
+    StyleSheet,
+    TextInput,
+    Alert,
+} from "react-native";
+import React from "react";
 import {
     FORM_LINE_HEIGHT,
     GlobalColors,
     GlobalStyles,
     Sizes,
 } from "../../Util/GlobalStyles";
-import { FormLine, PageContainer, PageHeader, Spacer } from "../../Components";
+import {
+    FormLine,
+    PageContainer,
+    PageHeader,
+    RoundButton,
+    Spacer,
+} from "../../Components";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AppRoutes } from "../../Util/Routes";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
-import { AXIOS_API } from "../../Util/Axios";
 import Swipeable from "../../Components/Swipeable";
-import { DELETE_GROUP } from "../../Redux/cast";
+import { ADD_GROUP, DELETE_GROUP, UPDATE_GROUP } from "../../Redux/cast";
 
 interface Props {
     navigation: StackNavigationProp<AppRoutes, "ShowSettings">;
@@ -20,15 +32,7 @@ interface Props {
 
 const ShowSettings = ({ navigation }: Props) => {
     const show = useAppSelector((state) => state.show);
-    const [ownerEmail, setOwnerEmail] = useState(null);
-
-    const getOwnerEmail = async () => {
-        const res = await AXIOS_API(`/users/getName/${show.owner}`);
-        setOwnerEmail(res.data.user);
-    };
-    useEffect(() => {
-        getOwnerEmail();
-    }, []);
+    const dispatch = useAppDispatch();
 
     return (
         <PageContainer>
@@ -45,30 +49,35 @@ const ShowSettings = ({ navigation }: Props) => {
                     value={show.name}
                     onChange={() => null}
                 />
+                <Spacer />
                 <SectionLabel label='Cast Groups' />
                 <CastGroups />
-                {ownerEmail && (
-                    <FormLine
-                        color={GlobalColors.text_primary}
-                        editing={true}
-                        label='Owner'
-                        value={ownerEmail}
-                        onChange={() => null}
+                <View style={{ alignItems: "flex-end" }}>
+                    <RoundButton
+                        label='Add Group'
+                        onPress={() =>
+                            Alert.prompt("Enter a group name", "", (text) =>
+                                dispatch(ADD_GROUP(text))
+                            )
+                        }
                     />
+                </View>
+
+                {show.accessList && (
+                    <>
+                        <SectionLabel label='Access List' />
+                        {show.accessList.map((a, i) => (
+                            <FormLine
+                                key={i}
+                                color={GlobalColors.text_primary}
+                                editing={false}
+                                label=''
+                                value={a}
+                                onChange={() => null}
+                            />
+                        ))}
+                    </>
                 )}
-                <Spacer />
-                <SectionLabel label='Access List' />
-                {show.accessList &&
-                    show.accessList.map((a, i) => (
-                        <FormLine
-                            key={i}
-                            color={GlobalColors.text_primary}
-                            editing={false}
-                            label=''
-                            value={a}
-                            onChange={() => null}
-                        />
-                    ))}
             </View>
         </PageContainer>
     );
@@ -87,20 +96,27 @@ const CastGroups = () => {
             }}
         >
             <ScrollView
-                contentContainerStyle={{
+                style={{
                     maxHeight: FORM_LINE_HEIGHT * 3,
-                    paddingHorizontal: Sizes.s,
                 }}
             >
-                {groups.map((group, i) => {
+                {groups.map((group, index) => {
                     return (
                         <Swipeable
                             key={group}
                             onDelete={() => dispatch(DELETE_GROUP(group))}
                         >
-                            <Text style={GlobalStyles.text_medium}>
+                            <TextInput
+                                style={{
+                                    ...GlobalStyles.text_medium,
+                                    paddingHorizontal: Sizes.s,
+                                }}
+                                onEndEditing={({ nativeEvent: { text } }) =>
+                                    dispatch(UPDATE_GROUP({ index, text }))
+                                }
+                            >
                                 {group}
-                            </Text>
+                            </TextInput>
                         </Swipeable>
                     );
                 })}

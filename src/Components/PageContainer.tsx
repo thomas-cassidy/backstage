@@ -1,10 +1,18 @@
 import { View, SafeAreaView } from "react-native";
 import React, { PropsWithChildren } from "react";
-import { GlobalStyles } from "../Util/GlobalStyles";
+import { GlobalColors, GlobalStyles } from "../Util/GlobalStyles";
 
-const PageContainer = ({ children }: PropsWithChildren<any>) => {
+const PageContainer = ({
+    children,
+    light,
+}: PropsWithChildren<{ light: boolean }>) => {
     return (
-        <View style={GlobalStyles.container}>
+        <View
+            style={[
+                GlobalStyles.container,
+                { backgroundColor: light ? "#fff" : GlobalColors.background },
+            ]}
+        >
             <SafeAreaView>{children}</SafeAreaView>
         </View>
     );

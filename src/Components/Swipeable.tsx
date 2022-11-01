@@ -19,7 +19,7 @@ const RenderRight = ({ shrink }: DelProps) => {
 };
 
 type SwipeProps = {
-    onDelete: () => void;
+    onDelete?: () => void;
 };
 
 const Swipey = ({ onDelete, children }: PropsWithChildren<SwipeProps>) => {

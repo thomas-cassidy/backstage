@@ -1,25 +1,32 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import AppLoading from "expo-app-loading";
-import { useAppDispatch } from "../Redux/hooks";
-import { CLEAR_LOADING } from "../Redux/auth";
+import React, { ReactNode, useCallback, useEffect, useState } from "react";
+import * as AppLoading from "expo-splash-screen";
+import { View } from "react-native";
 
 interface Props {
     children: ReactNode;
 }
 
+AppLoading.preventAutoHideAsync();
+
 const LoadAssets = ({ children }: Props) => {
     const [ready, setReady] = useState(false);
-    const dispatch = useAppDispatch();
+
+    const readyApp = useCallback(async () => {
+        await AppLoading.hideAsync();
+    }, [ready]);
 
     useEffect(() => {
-        dispatch(CLEAR_LOADING());
         return setReady(true);
     }, []);
 
     if (!ready) {
-        return <AppLoading />;
+        return null;
     } else {
-        return <>{children}</>;
+        return (
+            <View style={{ flex: 1 }} onLayout={readyApp}>
+                {children}
+            </View>
+        );
     }
 };
 
