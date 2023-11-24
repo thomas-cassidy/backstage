@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/core";
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { GlobalColors, GlobalStyles, Sizes } from "../Util/GlobalStyles";
@@ -21,16 +21,9 @@ const getFontSize = (length?: number) => {
   return 36;
 };
 
-const PageHeader = ({
-  label,
-  edit,
-  onEdit,
-  back,
-  onBack,
-  backLabel,
-  light = true,
-}: Props) => {
+const PageHeader = ({ label, edit, onEdit, back, onBack, backLabel, light = true }: Props) => {
   const navigation = useNavigation();
+  const [editing, setEditing] = useState(false);
 
   const color = light ? GlobalColors.text_primary : GlobalColors.background;
 
@@ -41,7 +34,13 @@ const PageHeader = ({
       {back && (
         <View style={styles.back}>
           <TouchableOpacity
-            onPress={onBack ? onBack : () => navigation.goBack()}
+            onPress={
+              onBack
+                ? onBack
+                : () => {
+                    navigation.goBack();
+                  }
+            }
           >
             <Text style={{ ...GlobalStyles.text_medium, color }}>
               {backLabel ? backLabel : "Back"}
@@ -49,15 +48,16 @@ const PageHeader = ({
           </TouchableOpacity>
         </View>
       )}
-      {label && (
-        <Text style={{ ...styles.label, color, fontSize: fontSize }}>
-          {label}
-        </Text>
-      )}
+      {label && <Text style={{ ...styles.label, color, fontSize: fontSize }}>{label}</Text>}
       {edit && (
         <View style={styles.edit}>
-          <TouchableOpacity onPress={onEdit}>
-            <Text style={{ ...GlobalStyles.text_medium, color }}>Edit</Text>
+          <TouchableOpacity
+            onPress={() => {
+              setEditing(!editing);
+              onEdit && onEdit();
+            }}
+          >
+            <Text style={{ ...GlobalStyles.text_medium, color }}>{!editing ? "Edit" : "Save"}</Text>
           </TouchableOpacity>
         </View>
       )}

@@ -15,4 +15,6 @@ export const initialTodosState: TodosState = {
   showComplete: false,
 };
 
-export const API_URI = "http://localhost:3001/api";
+// export const API_URI = "http://10.6.2.11:3001/api";
+export const API_URI = "http://10.6.2.180:3001/api";
+// export const API_URI = "http://localhost:3001/api";

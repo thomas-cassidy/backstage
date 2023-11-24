@@ -6,12 +6,7 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { BarLink, RadioButton, RoundButton } from "../../Components";
 import { useAppSelector } from "../../Redux/hooks";
 import { CueType } from "../../Types/AppTypes";
-import {
-  EditColors,
-  GlobalColors,
-  GlobalStyles,
-  Sizes,
-} from "../../Util/GlobalStyles";
+import { EditColors, GlobalColors, GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import { AppRoutes } from "../../Util/Routes";
 
 const { width } = Dimensions.get("window");
@@ -21,11 +16,11 @@ interface Props {
   cuePoint?: string;
   location?: string;
   notes?: string;
-  castMembers?: string[];
+  castInCue?: number[];
   next?: string;
   onNext?: () => void;
   editing: boolean;
-  handleChange: (index: number, field: keyof CueType, value: string) => void;
+  handleChange: (index: number, field: keyof CueType, value: string | number) => void;
   handleAddCue: () => void;
   handleDelCue: () => void;
   handleScroll: () => void;
@@ -43,7 +38,7 @@ const Cue = ({
   cuePoint,
   location,
   notes,
-  castMembers,
+  castInCue,
   next,
   onNext,
   editing,
@@ -115,24 +110,22 @@ const Cue = ({
       <View style={styles.inner}>
         <View style={styles.cuePoint}>
           <TextInput
+            placeholder="Cue Point"
             editable={editing}
             style={styles.textInputLarge}
-            onChange={(e) =>
-              handleChange(index, "cuePoint", e.nativeEvent.text)
-            }
+            onChange={(e) => handleChange(index, "cuePoint", e.nativeEvent.text)}
             value={cuePoint}
           />
         </View>
         <View style={styles.location}>
           <TextInput
+            placeholder="Location e.g. SR Wing 🥚"
             editable={editing}
             style={{
               ...GlobalStyles.text_medium,
               color: GlobalColors.secondary,
             }}
-            onChange={(e) =>
-              handleChange(index, "location", e.nativeEvent.text)
-            }
+            onChange={(e) => handleChange(index, "location", e.nativeEvent.text)}
             value={location}
           />
         </View>
@@ -140,6 +133,7 @@ const Cue = ({
         <View style={styles.notes}>
           <Text style={styles.textLabel}>Notes:</Text>
           <TextInput
+            placeholder="Notes..."
             editable={editing}
             multiline
             style={styles.textInputSmall}
@@ -157,42 +151,42 @@ const Cue = ({
                   label={c.role}
                   light={false}
                   key={i}
-                  style={{ width: "100%" }}
-                  onPress={() => handleChange(index, "castMembers", c.role)}
+                  style={{ width: undefined }}
+                  onPress={() => handleChange(index, "castMembers", c._id)}
                 >
-                  <RadioButton selected={castMembers?.indexOf(c.role) != -1} />
+                  <RadioButton
+                    selected={castInCue?.indexOf(c._id) != -1}
+                    onPress={() => handleChange(index, "castMembers", c._id)}
+                  />
                 </BarLink>
               ))
-            ) : castMembers?.length === 0 ? (
+            ) : castInCue?.length === 0 ? (
               <BarLink label={"None selected"} light={!editing} />
             ) : (
-              castMembers?.map((c, i) => {
-                const castMember = cast.find((x) => x._id === c);
-
-                if (castMember) {
+              cast
+                ?.filter((c) => castInCue?.find((x) => x === c._id))
+                .map((c, i) => {
                   return (
                     <BarLink
-                      label={castMember.name}
+                      label={c.role}
                       light={!editing}
                       key={i}
-                      onPress={() =>
+                      style={{ width: undefined }}
+                      onPress={() => {
+                        console.log("pressed");
                         navigation.navigate("CastProfile", {
-                          _id: castMember._id,
-                        })
-                      }
+                          _id: c._id,
+                        });
+                      }}
                     />
                   );
-                }
-                return <BarLink label={c} light={!editing} key={i} />;
-              })
+                })
             )}
           </ScrollView>
         </View>
 
         {editing ? (
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-evenly" }}
-          >
+          <View style={{ flexDirection: "row", justifyContent: "space-evenly" }}>
             <RoundButton
               label={"Add Cue"}
               onPress={handleAddCue}
@@ -219,12 +213,8 @@ const Cue = ({
           </View>
         ) : (
           <TouchableOpacity style={styles.next} onPress={onNext}>
-            <Text style={{ ...styles.textLabel, marginRight: 10 }}>
-              {next ? "Next Cue" : null}
-            </Text>
-            <Text style={styles.textInputMedium}>
-              {next ? next : "Last Cue"}
-            </Text>
+            <Text style={{ ...styles.textLabel, marginRight: 10 }}>{next ? "Next Cue" : null}</Text>
+            {next && <Text style={styles.textInputMedium}>{next}</Text>}
           </TouchableOpacity>
         )}
       </View>

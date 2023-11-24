@@ -1,26 +1,21 @@
 import React from "react";
 import { PageHeader, RoundButton } from "../../Components";
-import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
+import { useAppDispatch } from "../../Redux/hooks";
 import { LOGOUT_ASYNC } from "../../Redux/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { GlobalStyles } from "../../Util/GlobalStyles";
-import { storePersistor } from "../../Redux/store";
-import { refreshAccessToken } from "../../Util/RefreshAccessToken";
 const { container } = GlobalStyles;
 
 type Props = {};
 
 const Settings = (props: Props) => {
   const dispatch = useAppDispatch();
-  const state = useAppSelector((state) => state);
+  // const state = useAppSelector((state) => state);
   return (
     <SafeAreaView style={container}>
       <PageHeader label="Settings" />
       <RoundButton label="Log Out" onPress={() => dispatch(LOGOUT_ASYNC())} />
-      <RoundButton
-        label="Check State"
-        onPress={async () => console.log(state)}
-      />
+      {/* <RoundButton label="Check State" onPress={async () => console.log(state)} />
       <RoundButton
         label="Purge data"
         onPress={async () => {
@@ -37,7 +32,7 @@ const Settings = (props: Props) => {
       <RoundButton
         label="Show Access Token"
         onPress={async () => console.log(state.auth.ACCESS_TOKEN)}
-      />
+      /> */}
     </SafeAreaView>
   );
 };

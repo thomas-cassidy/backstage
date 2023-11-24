@@ -9,9 +9,15 @@ import { StyleSheet } from "react-native";
 export const GlobalColors = {
   background: "hsl(220, 13%, 18%)",
   text_primary: "#fff",
-  secondary: "#ffb600",
+  secondary: "#af9650",
   tertiary: "pink",
 };
+// export const GlobalColors = {
+//   background: "hsl(220, 13%, 18%)",
+//   text_primary: "#fff",
+//   secondary: "#af9650",
+//   tertiary: "#ff3610",
+// };
 
 export const EditColors: typeof GlobalColors = {
   background: GlobalColors.text_primary,

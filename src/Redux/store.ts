@@ -10,7 +10,6 @@ import {
   REGISTER,
   REHYDRATE,
 } from "redux-persist";
-
 import castSliceReducer from "./cast";
 import plotsSliceReducer from "./plots";
 import todosSliceReducer from "./todos";
@@ -58,6 +57,7 @@ const store = configureStore({
       },
     }).concat([ACTION_LOGGER]),
 });
+
 export const storePersistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;

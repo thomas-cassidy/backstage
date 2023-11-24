@@ -10,8 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 const { width } = Dimensions.get("window");
 
 const Footer = () => {
-  const navigation =
-    useNavigation<StackNavigationProp<AppRoutes, "Dashboard">>();
+  const navigation = useNavigation<StackNavigationProp<AppRoutes, "Dashboard">>();
   return (
     <View
       style={{
@@ -24,25 +23,13 @@ const Footer = () => {
       }}
     >
       <TouchableOpacity onPress={() => navigation.navigate("NewShow")}>
-        <FontAwesomeIcon
-          icon={faPlus}
-          size={40}
-          color={GlobalColors.secondary}
-        />
+        <FontAwesomeIcon icon={faPlus} size={40} color={GlobalColors.secondary} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+        <FontAwesomeIcon icon={faSearch} size={40} color={GlobalColors.secondary} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
-        <FontAwesomeIcon
-          icon={faSearch}
-          size={40}
-          color={GlobalColors.secondary}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
-        <FontAwesomeIcon
-          icon={faGear}
-          size={40}
-          color={GlobalColors.secondary}
-        />
+        <FontAwesomeIcon icon={faGear} size={40} color={GlobalColors.secondary} />
       </TouchableOpacity>
     </View>
   );

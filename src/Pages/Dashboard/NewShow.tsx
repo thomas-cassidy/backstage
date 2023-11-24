@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import {
-  View,
-  SafeAreaView,
-  Dimensions,
-  StyleSheet,
-  Alert,
-} from "react-native";
+import { View, SafeAreaView, Dimensions, StyleSheet, Alert } from "react-native";
 import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AppRoutes } from "../../Util/Routes";
 import { GlobalColors, GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import { FormLine, PageHeader, RoundButton } from "../../Components";
 import { AXIOS_API } from "../../Util/Axios";
+import { validatePassword } from "../../Util/FormValidation";
 
 const { width } = Dimensions.get("window");
 
@@ -27,7 +22,10 @@ const NewShow = ({ navigation }: Props) => {
   const [confirmPassword, setConfirmPasword] = useState("");
 
   const handleSubmit = async () => {
-    console.log(showName, password, password);
+    if (!showName) return Alert.alert("You must have a show name");
+    const passwordValidation = validatePassword(password);
+    if (passwordValidation.error) return Alert.alert(passwordValidation.error);
+    if (password !== confirmPassword) return Alert.alert("Your passwords do not match");
 
     try {
       const response = await AXIOS_API.post("/shows", {
@@ -35,7 +33,7 @@ const NewShow = ({ navigation }: Props) => {
         password,
         confirmPassword,
       });
-      console.log(response.data);
+      console.log("create show response", response.data);
     } catch (e) {
       console.log(Alert.alert("Network Error", "Check your connection"));
     }
@@ -52,6 +50,7 @@ const NewShow = ({ navigation }: Props) => {
             color={GlobalColors.text_primary}
             onChange={(e) => setShowName(e)}
             value={showName}
+            textContentType={"name"}
           />
           <FormLine
             label="Password"

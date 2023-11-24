@@ -1,19 +1,16 @@
 import { RouteProp } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useRef, useState } from "react";
-import { Dimensions, SafeAreaView, StyleSheet, Text } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Alert, Dimensions, SafeAreaView, StyleSheet, Text } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { PageHeader } from "../../Components";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
-import { ADD_CUE, DELETE_CUE, EDIT_CUE } from "../../Redux/plots";
+import { ADD_CUE, DELETE_CUE, EDIT_CUE, UPDATE_CUE_ASYNC } from "../../Redux/plots";
 import { CueType, Plot } from "../../Types/AppTypes";
-import {
-  EditColors,
-  GlobalColors,
-  GlobalStyles,
-} from "../../Util/GlobalStyles";
+import { EditColors, GlobalColors, GlobalStyles } from "../../Util/GlobalStyles";
 import { AppRoutes } from "../../Util/Routes";
 import Cue from "./Cue";
+import { GET_SHOW_BACKGROUND } from "../../Redux/show";
 
 const { width } = Dimensions.get("window");
 
@@ -41,29 +38,49 @@ type PlotPageProps = Props & {
 const PlotPage = ({ route, navigation, plot }: PlotPageProps) => {
   const { _id } = route.params;
   const dispatch = useAppDispatch();
+  const showId = useAppSelector((state) => state.show._id);
   const [editing, setEditing] = useState(false);
+  const [hasEdits, setHasEdits] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    if (!editing && hasEdits) handleSaveChanges();
+  }, [editing]);
+
+  const handleSaveChanges = async () => {
+    await dispatch(UPDATE_CUE_ASYNC(_id));
+    setHasEdits(false);
+  };
+
   const handleScroll = (index: number) => {
     scrollRef.current?.scrollTo({ x: (index + 1) * width });
   };
 
-  const handleChange = (index: number, field: keyof CueType, value: string) => {
-    dispatch(EDIT_CUE({ ...{ _id, index, field, value } }));
+  const handleChange = (index: number, field: keyof CueType, value: string | number) => {
+    dispatch(EDIT_CUE({ _id, index, field, value }));
+    setHasEdits(true);
+    return {
+      _id: 1,
+      castMembers: [],
+      cuePoint: "",
+      location: "",
+      notes: "",
+    };
   };
   const handleAddCue = async (index: number) => {
     await dispatch(ADD_CUE({ _id, index }));
+    setHasEdits(true);
     handleScroll(index);
   };
-  const handleDelCue = async (index: number) => {
+  const handleDelCue = (index: number) => {
+    setHasEdits(true);
     dispatch(DELETE_CUE({ _id, index }));
   };
 
   const styles = StyleSheet.create({
     container: {
       ...GlobalStyles.container,
-      backgroundColor: editing
-        ? EditColors.background
-        : GlobalColors.background,
+      backgroundColor: editing ? EditColors.background : GlobalColors.background,
     },
   });
 
@@ -72,8 +89,33 @@ const PlotPage = ({ route, navigation, plot }: PlotPageProps) => {
       <PageHeader
         label={plot?.name}
         edit
-        onEdit={() => setEditing((prev) => !prev)}
+        onEdit={() => {
+          if (plot.cues.length === 0) dispatch(ADD_CUE({ _id, index: 0 }));
+          setEditing((prev) => !prev);
+          console.log(plot);
+        }}
         back
+        onBack={() => {
+          if (hasEdits) {
+            return Alert.alert(
+              "Do you want to discard these edits?",
+              "",
+              [
+                { text: "Cancel", style: "cancel", onPress: () => null },
+                {
+                  text: "Yes",
+                  style: "destructive",
+                  onPress: () => {
+                    dispatch(GET_SHOW_BACKGROUND({ showId }));
+                    navigation.goBack();
+                  },
+                },
+              ],
+              { cancelable: true }
+            );
+          }
+          navigation.goBack();
+        }}
         backLabel="Exit"
         light={!editing}
       />
@@ -82,7 +124,7 @@ const PlotPage = ({ route, navigation, plot }: PlotPageProps) => {
         style={{ flex: 1, width }}
         horizontal
         snapToInterval={width}
-        decelerationRate={"fast"}
+        decelerationRate={0.99}
       >
         {plot.cues.map(({ cuePoint, notes, location, castMembers }, index) => {
           let next;
@@ -100,7 +142,7 @@ const PlotPage = ({ route, navigation, plot }: PlotPageProps) => {
                 cuePoint,
                 location,
                 notes,
-                castMembers,
+                castInCue: castMembers,
                 next,
                 handleChange,
               }}
