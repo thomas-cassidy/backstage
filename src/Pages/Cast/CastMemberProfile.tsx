@@ -40,19 +40,18 @@ const CastMemberProfileContainer = ({ route, navigation }: OuterProps) => {
   const cast = useAppSelector(getCast);
   const { ACCESS_TOKEN } = useAppSelector(getAuth);
 
-  if (!cast || !ACCESS_TOKEN) return <></>;
+  if (!cast || !ACCESS_TOKEN) return <Text>Oopsie</Text>;
 
-  return <CastMemberProfile {...{ route, navigation, ACCESS_TOKEN }} />;
+  return <CastMemberProfile {...{ route, navigation, ACCESS_TOKEN, cast }} />;
 };
 
 interface InnerProps extends OuterProps {
   ACCESS_TOKEN: string;
+  cast: CastMember[];
 }
 
-const CastMemberProfile = ({ route, navigation }: InnerProps) => {
+const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps) => {
   const { _id } = route.params;
-  const cast = useAppSelector(getCast);
-  const { ACCESS_TOKEN } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
   const castMember = cast.find((c) => c._id === _id);
