@@ -17,18 +17,16 @@ import {
 import { useAppSelector } from "../Redux/hooks";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useInterceptors } from "./Axios";
-import { ImagePicker } from "../Components";
+// import { ImagePicker } from "../Components";
 import { ShowSettings } from "../Pages/ShowSettings";
 import { AppRoutes } from "./Routes";
 import { SET_LOADED } from "../Redux/status";
-import { Search } from "../Pages/Dashboard";
 
 const MainStack = createStackNavigator<AppRoutes>();
 
 const Navigator = () => {
   const auth = useAppSelector((state) => state.auth);
   const status = useAppSelector((state) => state.status);
-
   useInterceptors();
 
   useEffect(() => {
@@ -40,7 +38,6 @@ const Navigator = () => {
       <MainStack.Navigator
         screenOptions={{
           headerShown: false,
-          // animationEnabled: false,
         }}
       >
         {!auth.loggedIn ? (
@@ -54,11 +51,6 @@ const Navigator = () => {
             <MainStack.Screen
               component={NewShow}
               name={"NewShow"}
-              options={{ presentation: "modal" }}
-            />
-            <MainStack.Screen
-              component={Search}
-              name={"Search"}
               options={{ presentation: "modal" }}
             />
             <MainStack.Screen component={Settings} name={"Settings"} />
@@ -82,15 +74,10 @@ const Navigator = () => {
             />
             <MainStack.Screen component={Todos} name={"Todos"} />
             <MainStack.Screen component={ShowSettings} name={"ShowSettings"} />
-            <MainStack.Screen
-              component={ImagePicker}
-              name={"ImagePicker"}
-              options={{ presentation: "modal" }}
-            />
           </>
         )}
       </MainStack.Navigator>
-      {status.loading === "loading" && (
+      {status.loading && (
         <View
           style={{
             ...StyleSheet.absoluteFillObject,

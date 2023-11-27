@@ -22,10 +22,10 @@ import { UPDATE_CASTMEMBER_ASYNC } from "../../Redux/cast";
 import { CastMember } from "../../Types/AppTypes";
 import { API_URI } from "../../Util/InitialState";
 import { REFRESH_ACCESS_TOKEN } from "../../Redux/auth";
-import * as ImagePicker from "expo-image-picker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faChevronLeft, faChevronRight, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { getCast, getAuth } from "../../Redux/Helpers";
+import { getAuth, getCast } from "../../Redux/Helpers";
+import ImagePicker from "expo-image-picker";
 
 const { width } = Dimensions.get("window");
 
@@ -40,7 +40,7 @@ const CastMemberProfileContainer = ({ route, navigation }: OuterProps) => {
   const cast = useAppSelector(getCast);
   const { ACCESS_TOKEN } = useAppSelector(getAuth);
 
-  if (!cast || !ACCESS_TOKEN) return navigation.pop();
+  if (!cast || !ACCESS_TOKEN) return <></>;
 
   return <CastMemberProfile {...{ route, navigation, ACCESS_TOKEN }} />;
 };
@@ -49,14 +49,15 @@ interface InnerProps extends OuterProps {
   ACCESS_TOKEN: string;
 }
 
-const CastMemberProfile = ({ route, navigation, ACCESS_TOKEN }: InnerProps) => {
+const CastMemberProfile = ({ route, navigation }: InnerProps) => {
   const { _id } = route.params;
   const cast = useAppSelector(getCast);
+  const { ACCESS_TOKEN } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
   const castMember = cast.find((c) => c._id === _id);
-  const [newCastMember] = useState(_id === -1);
-  const [editing, setEditing] = useState(_id === -1);
+  const [newCastMember] = useState(_id === "-1");
+  const [editing, setEditing] = useState(_id === "-1");
   const [hasChanges, setHasChanges] = useState(false);
   const [tempCastMember, setTempCastMember] = useState<CastMember>(
     castMember
@@ -66,45 +67,11 @@ const CastMemberProfile = ({ route, navigation, ACCESS_TOKEN }: InnerProps) => {
           role: "",
           notes: "",
           category: "",
-          _id: -1,
+          _id: "",
           images: [],
         }
   );
-
-  const color = editing ? GlobalColors.background : GlobalColors.text_primary;
-  const background = editing ? GlobalColors.text_primary : GlobalColors.background;
-  const styles = makeStyles(color, background);
-  const [newImage, setNewImage] = useState<ImagePicker.ImagePickerAsset>();
-
   const [currentImage, setCurrentImage] = useState(0);
-  const [imageSource, setImageSource] = useState(() =>
-    newImage
-      ? { uri: newImage.uri }
-      : tempCastMember.images?.length
-      ? {
-          uri: `${API_URI}/images/${tempCastMember.images[currentImage]}`,
-          headers: {
-            "x-access-token": ACCESS_TOKEN,
-          },
-        }
-      : require("../../Assets/placeholder_headshot.png")
-  );
-
-  useEffect(() => {
-    setImageSource(
-      newImage
-        ? { uri: newImage.uri }
-        : tempCastMember.images?.length
-        ? {
-            uri: `${API_URI}/images/${tempCastMember.images[currentImage]}`,
-            headers: {
-              "x-access-token": ACCESS_TOKEN,
-            },
-          }
-        : require("../../Assets/placeholder_headshot.png")
-    );
-  }, [ACCESS_TOKEN, currentImage, newImage]);
-
   const incImage = () => {
     setCurrentImage((prev) => {
       if (!tempCastMember.images || tempCastMember.images.length === 0) {
@@ -123,6 +90,7 @@ const CastMemberProfile = ({ route, navigation, ACCESS_TOKEN }: InnerProps) => {
       }
     });
   };
+
   const handleFormChange = (field: "name" | "role" | "notes" | "category", value: string) => {
     setHasChanges(true);
     setTempCastMember((prev) => {
@@ -132,62 +100,54 @@ const CastMemberProfile = ({ route, navigation, ACCESS_TOKEN }: InnerProps) => {
     });
   };
 
-  const unsavedSafety = (
-    e: EventArg<
-      "beforeRemove",
-      true,
-      {
-        action: Readonly<{
-          type: string;
-          payload?: object | undefined;
-          source?: string | undefined;
-          target?: string | undefined;
-        }>;
-      }
-    >
-  ) => {
-    if (hasChanges) {
-      e.preventDefault();
-      Alert.alert("You have unsaved changes", "", [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Discard",
-          style: "destructive",
-          onPress: () => {
-            navigation.dispatch(e.data.action);
-          },
-        },
-      ]);
+  useEffect(() => {
+    if (!editing && hasChanges) {
+      dispatch(UPDATE_CASTMEMBER_ASYNC({ castMember: tempCastMember }));
+      setHasChanges(false);
     }
-  };
-
-  const onEdit = async () => {
-    setEditing(!editing);
-    if (editing && hasChanges) {
-      await dispatch(UPDATE_CASTMEMBER_ASYNC({ castMember: tempCastMember, image: newImage })).then(
-        () => setHasChanges(false)
-      );
-    }
-  };
+  }, [editing]);
 
   useEffect(() => {
+    const unsavedSafety = (
+      e: EventArg<
+        "beforeRemove",
+        true,
+        {
+          action: Readonly<{
+            type: string;
+            payload?: object | undefined;
+            source?: string | undefined;
+            target?: string | undefined;
+          }>;
+        }
+      >
+    ) => {
+      if (hasChanges) {
+        e.preventDefault();
+        Alert.alert("You have unsaved changes", "", [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Discard",
+            style: "destructive",
+            onPress: () => {
+              navigation.dispatch(e.data.action);
+            },
+          },
+        ]);
+      }
+    };
+
     navigation.addListener("beforeRemove", unsavedSafety);
     return () => navigation.removeListener("beforeRemove", unsavedSafety);
   }, [hasChanges]);
 
+  const color = editing ? GlobalColors.background : GlobalColors.text_primary;
+  const background = editing ? GlobalColors.text_primary : GlobalColors.background;
+  const styles = makeStyles(color, background);
+
   const pickImage = async () => {
-    await ImagePicker.requestCameraPermissionsAsync();
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      selectionLimit: 1,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (result && result.assets && result.assets.length > 0) {
-      setHasChanges(true);
-      setNewImage(result.assets[0]);
-    }
+    const perm = await ImagePicker.requestCameraPermissionsAsync();
+    const result = await ImagePicker.launchCameraAsync();
   };
 
   return (
@@ -197,7 +157,7 @@ const CastMemberProfile = ({ route, navigation, ACCESS_TOKEN }: InnerProps) => {
           label={editing ? "Edit Mode" : tempCastMember.name}
           light={!editing}
           edit
-          {...{ onEdit }}
+          onEdit={() => setEditing((prev) => !prev)}
         />
         <View style={styles.imageSection}>
           <TouchableOpacity
@@ -255,7 +215,18 @@ const CastMemberProfile = ({ route, navigation, ACCESS_TOKEN }: InnerProps) => {
               </TouchableOpacity>
             )}
             <Image
-              source={imageSource}
+              source={
+                tempCastMember.images?.length
+                  ? {
+                      uri: `${API_URI}/images/${tempCastMember.images[currentImage]}`,
+                      headers: {
+                        "x-access-token": ACCESS_TOKEN,
+                      },
+                    }
+                  : {
+                      uri: "https://images-na.ssl-images-amazon.com/images/I/51+E4VHsZ6L.jpg",
+                    }
+              }
               onError={(err) => {
                 dispatch(REFRESH_ACCESS_TOKEN());
               }}
@@ -293,7 +264,7 @@ const CastMemberProfile = ({ route, navigation, ACCESS_TOKEN }: InnerProps) => {
                 color,
                 flex: 1,
               }}
-              onChangeText={(text) => handleFormChange("notes", text)}
+              onChange={(e) => handleFormChange("notes", e.nativeEvent.text)}
             >
               {tempCastMember.notes}
             </TextInput>
@@ -314,20 +285,10 @@ const CastMemberProfile = ({ route, navigation, ACCESS_TOKEN }: InnerProps) => {
           label="Delete Cast Member"
           altColor
           onPress={async () => {
-            Alert.alert(
-              "Are you sure you wish to delete this cast member?",
-              "This cannot be undone",
-              [
-                { text: "Cancel", style: "cancel" },
-                { text: "Delete", style: "destructive", onPress: () => navigation.goBack() },
-              ],
-              { cancelable: true, onDismiss: () => console.log("plop") }
-            );
-
             // !newCastMember
             //   ? await dispatch(REMOVE_CASTMEMBER(tempCastMember))
             //   : null;
-            // navigation.goBack();
+            navigation.goBack();
           }}
         />
       )}

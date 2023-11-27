@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { API_URI } from "../Util/InitialState";
 import * as secureStore from "expo-secure-store";
 import { User } from "../Types/AppTypes";
@@ -69,22 +69,18 @@ export const LOGIN_ASYNC = createAsyncThunk<
 >("login", async ({ email, password }, { dispatch }) => {
   dispatch(SET_LOADING());
 
-  console.log("login async");
-  try {
-    const res = await axios.post<ExpectedServerData>(`${API_URI}/login`, {
-      email,
-      password,
-    });
-    await secureStore.setItemAsync("REFRESH_TOKEN", res.data.REFRESH_TOKEN);
-    let userData: User = res.data.user;
-    let shows = await fetchShowNames(userData, res.data.ACCESS_TOKEN);
-    dispatch(SET_USER({ ...userData, shows }));
-    dispatch(SET_LOADED());
-    return res.data;
-  } catch (e: any) {
-    dispatch(SET_LOADED());
-    throw e;
-  }
+  const res: AxiosResponse<ExpectedServerData> = await axios.post(`${API_URI}/login`, {
+    email,
+    password,
+  });
+
+  await secureStore.setItemAsync("REFRESH_TOKEN", res.data.REFRESH_TOKEN);
+
+  let userData: User = res.data.user as User;
+  let shows = await fetchShowNames(userData, res.data.ACCESS_TOKEN);
+  dispatch(SET_USER({ ...userData, shows }));
+  dispatch(SET_LOADED());
+  return res.data;
 });
 
 export const LOGOUT_ASYNC = createAsyncThunk("logout", async (state, { dispatch }) => {
@@ -157,15 +153,6 @@ const auth = createSlice({
     });
     builder.addCase(LOGOUT_ASYNC.rejected, (state) => {
       return { ...state, loggedIn: false, ACCESS_TOKEN: "" };
-    });
-    builder.addCase(REGISTER.fulfilled, (state, { payload }) => {
-      return { ...state, status: "idle", loggedIn: true, ACCESS_TOKEN: payload.ACCESS_TOKEN };
-    });
-    builder.addCase(REGISTER.rejected, (state, { error, payload }) => {
-      if (error.message) {
-        return { ...state, error: error.message };
-      }
-      return { ...state, error: "Woops. An unknown error occurred" };
     });
   },
 });
