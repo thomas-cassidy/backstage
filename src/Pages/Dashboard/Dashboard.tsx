@@ -1,5 +1,5 @@
 import { Alert, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { GlobalColors, GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BarLink, Footer, PageHeader } from "../../Components";
@@ -8,6 +8,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import { ScrollView } from "react-native-gesture-handler";
 import { GET_SHOW_ASYNC } from "../../Redux/show";
+import { SET_HAS_NOT_SEEN_HINT } from "../../Redux/status";
 
 const { container, text_medium } = GlobalStyles;
 
@@ -18,6 +19,8 @@ type Props = {
 const Dashboard = ({ navigation }: Props) => {
   const { user } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
+
+  useEffect(()=>{dispatch(SET_HAS_NOT_SEEN_HINT())},[])
 
   if (!user) {
     return <></>;

@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PageHeader, RoundButton } from "../../Components";
+import { OverlayInstruction, PageHeader, RoundButton } from "../../Components";
 import { GlobalColors, GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import CastMemberSmall from "./CastMemberSmall";
-import { useAppSelector } from "../../Redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import { CastMember } from "../../Types/AppTypes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AppRoutes } from "../../Util/Routes";
+import { IStatusState, SET_HAS_SEEN_HINT } from "../../Redux/status";
+import { getCast } from "../../Redux/Helpers";
 
 const { width } = Dimensions.get("window");
 
-interface Props {
+interface ContainerProps {
   navigation: StackNavigationProp<AppRoutes, "Cast">;
 }
 
@@ -19,12 +21,25 @@ interface RenderList {
   [group: string]: CastMember[];
 }
 
-const Cast = ({ navigation }: Props) => {
-  const cast = useAppSelector((state) => state.cast);
+const Container = ({navigation}:ContainerProps) => {
+  const cast = useAppSelector(getCast)
+  const status = useAppSelector(state => state.status)
+
+  if (!cast || !status) return <Text>Oopsie</Text>
+  return <Cast {...{navigation, cast, status}}/>
+}
+
+interface InnerProps extends ContainerProps{
+  cast: CastMember[],
+  status: IStatusState
+}
+
+const Cast = ({ navigation, cast, status }: InnerProps) => {
+  const dispatch = useAppDispatch()
 
   const [castRenderList, setCastRenderList] = useState<RenderList>(() => {
     let state: RenderList = { uncategorised: [] };
-    cast.cast.map((c) => {
+    cast.map((c) => {
       if (c.category === undefined) {
         return state.uncategorised.push(c);
       } else if (state[c.category]) {
@@ -37,7 +52,7 @@ const Cast = ({ navigation }: Props) => {
   useEffect(() => {
     setCastRenderList(() => {
       let state: RenderList = { uncategorised: [] };
-      cast.cast.map((c) => {
+      cast.map((c) => {
         if (c.category === undefined) {
           return state.uncategorised.push(c);
         } else if (state[c.category]) {
@@ -78,6 +93,9 @@ const Cast = ({ navigation }: Props) => {
         label={"Add Cast Member"}
         onPress={() => navigation.navigate("CastProfile", { _id: "-1" })}
       />
+
+      {!status.hasSeenCastHint && <OverlayInstruction message="Swipe to see other groups ->" callback={() => dispatch(SET_HAS_SEEN_HINT())}/> }
+
     </SafeAreaView>
   );
 };
@@ -98,4 +116,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Cast;
+export default Container;

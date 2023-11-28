@@ -47,7 +47,7 @@ const Home = ({ navigation }: HomeProps) => {
   useEffect(() => {
     if (auth.loggedIn === false) {
       console.log("loggedOut");
-      dispatch(LOGOUT_ASYNC);
+      dispatch(LOGOUT_ASYNC());
     }
   }, [auth.loggedIn]);
 

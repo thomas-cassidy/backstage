@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import {
   Dashboard,
@@ -20,7 +20,6 @@ import { useInterceptors } from "./Axios";
 // import { ImagePicker } from "../Components";
 import { ShowSettings } from "../Pages/ShowSettings";
 import { AppRoutes } from "./Routes";
-import { SET_LOADED } from "../Redux/status";
 
 const MainStack = createStackNavigator<AppRoutes>();
 
@@ -28,11 +27,6 @@ const Navigator = () => {
   const auth = useAppSelector((state) => state.auth);
   const status = useAppSelector((state) => state.status);
   useInterceptors();
-
-  useEffect(() => {
-    console.log(status.loading);
-    SET_LOADED();
-  }, []);
 
   return (
     <>

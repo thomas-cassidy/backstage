@@ -73,6 +73,10 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
   const [currentImage, setCurrentImage] = useState(0);
   const [newImage, setNewImage] = useState<ImagePicker.ImagePickerAsset>();
 
+  const color = editing ? GlobalColors.background : GlobalColors.text_primary;
+  const background = editing ? GlobalColors.text_primary : GlobalColors.background;
+  const styles = makeStyles(color, background);
+
   const incImage = () => {
     setCurrentImage((prev) => {
       if (!tempCastMember.images || tempCastMember.images.length === 0) {
@@ -141,10 +145,6 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
     navigation.addListener("beforeRemove", unsavedSafety);
     return () => navigation.removeListener("beforeRemove", unsavedSafety);
   }, [hasChanges]);
-
-  const color = editing ? GlobalColors.background : GlobalColors.text_primary;
-  const background = editing ? GlobalColors.text_primary : GlobalColors.background;
-  const styles = makeStyles(color, background);
 
   const pickImage = async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
@@ -250,7 +250,7 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
           </TouchableOpacity>
           {editing && <RoundButton label="Set as Default" style={{ margin: 10 }} />}
         </View>
-        <ScrollView style={styles.form}>
+        <ScrollView style={styles.form} contentContainerStyle={{paddingBottom: 63}}>
           <FormLine
             label="Role"
             {...{ color, editing }}
@@ -315,6 +315,7 @@ const makeStyles = (color: string, background: string) =>
     container: {
       ...GlobalStyles.container,
       backgroundColor: background,
+
     },
     imageSection: {
       width,
@@ -331,7 +332,6 @@ const makeStyles = (color: string, background: string) =>
     },
     form: {
       width,
-      flex: 1,
       padding: Sizes.m,
     },
     formLine: {
@@ -344,7 +344,6 @@ const makeStyles = (color: string, background: string) =>
     notesSection: {
       borderColor: color,
       paddingTop: Sizes.s,
-      // flex: 1,
     },
     text_label: {
       ...GlobalStyles.text_label,
