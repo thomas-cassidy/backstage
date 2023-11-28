@@ -25,7 +25,7 @@ import { REFRESH_ACCESS_TOKEN } from "../../Redux/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faChevronLeft, faChevronRight, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { getAuth, getCast } from "../../Redux/Helpers";
-import ImagePicker from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";
 
 const { width } = Dimensions.get("window");
 
@@ -71,6 +71,8 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
         }
   );
   const [currentImage, setCurrentImage] = useState(0);
+  const [newImage, setNewImage] = useState<ImagePicker.ImagePickerAsset>();
+
   const incImage = () => {
     setCurrentImage((prev) => {
       if (!tempCastMember.images || tempCastMember.images.length === 0) {
@@ -101,7 +103,7 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
 
   useEffect(() => {
     if (!editing && hasChanges) {
-      dispatch(UPDATE_CASTMEMBER_ASYNC({ castMember: tempCastMember }));
+      dispatch(UPDATE_CASTMEMBER_ASYNC({ castMember: tempCastMember, image: newImage }));
       setHasChanges(false);
     }
   }, [editing]);
@@ -146,8 +148,36 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
 
   const pickImage = async () => {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
-    const result = await ImagePicker.launchCameraAsync();
+    if (!perm.granted)
+      return Alert.alert(
+        "You will need to give permission for this app to access the camera in the settings app."
+      );
+    // const result = await ImagePicker.launchCameraAsync({
+    //   allowsMultipleSelection: false,
+    //   allowsEditing: true,
+    // });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsMultipleSelection: false,
+      allowsEditing: true,
+    });
+    if (result.assets) {
+      setHasChanges(true);
+      setNewImage(result.assets[0]);
+    }
   };
+
+  const imageSource = newImage
+    ? { uri: newImage.uri }
+    : tempCastMember.images?.length
+    ? {
+        uri: `${API_URI}/images/${tempCastMember.images[currentImage]}`,
+        headers: {
+          "x-access-token": ACCESS_TOKEN,
+        },
+      }
+    : {
+        uri: "https://images-na.ssl-images-amazon.com/images/I/51+E4VHsZ6L.jpg",
+      };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -157,14 +187,11 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
           light={!editing}
           edit
           onEdit={() => setEditing((prev) => !prev)}
+          back
+          onBack={() => navigation.goBack()}
         />
         <View style={styles.imageSection}>
-          <TouchableOpacity
-            disabled={!editing}
-            activeOpacity={0.8}
-            onPress={() => pickImage()}
-            // onPress={() => navigation.navigate("ImagePicker")}
-          >
+          <TouchableOpacity disabled={!editing} activeOpacity={0.8} onPress={() => pickImage()}>
             <TouchableOpacity
               style={{
                 height: 50,
@@ -214,18 +241,7 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
               </TouchableOpacity>
             )}
             <Image
-              source={
-                tempCastMember.images?.length
-                  ? {
-                      uri: `${API_URI}/images/${tempCastMember.images[currentImage]}`,
-                      headers: {
-                        "x-access-token": ACCESS_TOKEN,
-                      },
-                    }
-                  : {
-                      uri: "https://images-na.ssl-images-amazon.com/images/I/51+E4VHsZ6L.jpg",
-                    }
-              }
+              source={imageSource}
               onError={(err) => {
                 dispatch(REFRESH_ACCESS_TOKEN());
               }}
@@ -263,10 +279,9 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
                 color,
                 flex: 1,
               }}
-              onChange={(e) => handleFormChange("notes", e.nativeEvent.text)}
-            >
-              {tempCastMember.notes}
-            </TextInput>
+              onChangeText={(e) => handleFormChange("notes", e)}
+              value={tempCastMember.notes}
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -329,7 +344,7 @@ const makeStyles = (color: string, background: string) =>
     notesSection: {
       borderColor: color,
       paddingTop: Sizes.s,
-      flex: 1,
+      // flex: 1,
     },
     text_label: {
       ...GlobalStyles.text_label,

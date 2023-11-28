@@ -18,7 +18,13 @@ export default function App() {
             theme={{
               colors: {
                 background: GlobalColors.background,
+                border: "none",
+                card: "none",
+                notification: "none",
+                primary: GlobalColors.background,
+                text: GlobalColors.text_primary,
               },
+              dark: false,
             }}
           >
             <Navigator />

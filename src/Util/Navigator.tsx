@@ -30,6 +30,7 @@ const Navigator = () => {
   useInterceptors();
 
   useEffect(() => {
+    console.log(status.loading);
     SET_LOADED();
   }, []);
 
@@ -77,7 +78,7 @@ const Navigator = () => {
           </>
         )}
       </MainStack.Navigator>
-      {status.loading && (
+      {status.loading === "loading" && (
         <View
           style={{
             ...StyleSheet.absoluteFillObject,

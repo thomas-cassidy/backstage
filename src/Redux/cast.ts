@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
-import { Alert, Platform } from "react-native";
+import { Alert } from "react-native";
 import { CastMember } from "../Types/AppTypes";
 import { AXIOS_API } from "../Util/Axios";
 import { initialCastState } from "../Util/InitialState";

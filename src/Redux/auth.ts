@@ -68,19 +68,23 @@ export const LOGIN_ASYNC = createAsyncThunk<
   { email: string; password: string }
 >("login", async ({ email, password }, { dispatch }) => {
   dispatch(SET_LOADING());
+  try {
+    const res: AxiosResponse<ExpectedServerData> = await axios.post(`${API_URI}/login`, {
+      email,
+      password,
+    });
 
-  const res: AxiosResponse<ExpectedServerData> = await axios.post(`${API_URI}/login`, {
-    email,
-    password,
-  });
+    await secureStore.setItemAsync("REFRESH_TOKEN", res.data.REFRESH_TOKEN);
 
-  await secureStore.setItemAsync("REFRESH_TOKEN", res.data.REFRESH_TOKEN);
-
-  let userData: User = res.data.user as User;
-  let shows = await fetchShowNames(userData, res.data.ACCESS_TOKEN);
-  dispatch(SET_USER({ ...userData, shows }));
-  dispatch(SET_LOADED());
-  return res.data;
+    let userData: User = res.data.user as User;
+    let shows = await fetchShowNames(userData, res.data.ACCESS_TOKEN);
+    dispatch(SET_USER({ ...userData, shows }));
+    dispatch(SET_LOADED());
+    return res.data;
+  } catch (e) {
+    dispatch(SET_LOADED());
+    throw e;
+  }
 });
 
 export const LOGOUT_ASYNC = createAsyncThunk("logout", async (state, { dispatch }) => {
@@ -127,7 +131,6 @@ const auth = createSlice({
       console.log("login pending");
     });
     builder.addCase(LOGIN_ASYNC.fulfilled, (state, { payload }) => {
-      // console.log("login success", payload);
       return {
         ...state,
         status: "idle",
@@ -137,7 +140,6 @@ const auth = createSlice({
     });
     builder.addCase(LOGIN_ASYNC.rejected, (state, { error }) => {
       console.log("LOGIN ASYNC ERROR", error.message);
-
       switch (error.message?.split(" ").pop()) {
         case "500":
           return { ...state, status: "idle", error: "Server Error" };

@@ -120,22 +120,6 @@ const Login = ({ navigation }: Props) => {
           <Text style={{ ...text_small, color: GlobalColors.tertiary }}>Register here</Text>
         </TouchableOpacity>
       </View>
-      {/* {status === "loading" && (
-                <View
-                    style={{
-                        ...StyleSheet.absoluteFillObject,
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    <ActivityIndicator
-                        size={"large"}
-                        style={{
-                            position: "absolute",
-                        }}
-                    />
-                </View>
-            )} */}
     </SafeAreaView>
   );
 };
