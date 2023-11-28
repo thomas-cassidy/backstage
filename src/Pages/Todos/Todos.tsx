@@ -48,10 +48,11 @@ const Todos = () => {
     <SafeAreaView style={GlobalStyles.container}>
       <PageHeader label={"To Dos"} back />
       <ScrollView style={styles.todosContainer}>
-        {renderList.map(({ name, completed, priority, _id }, index) => {
+        {todos.map(({ name, completed, priority, _id }, index) => {
           return (
-            <View key={index} style={{ height: 60, alignItems: "center" }}>
+            // <View key={index} style={{ height: 60, alignItems: "center" }}>
               <Todo
+                key={index}
                 setComplete={() =>
                   dispatch(UPDATE_TODO({ _id, name, completed: !completed, priority }))
                 }
@@ -62,7 +63,7 @@ const Todos = () => {
                   dispatch(DELETE_TODO({ _id, completed, name, priority }));
                 }}
                 {...{ completed, priority }}
-                value={renderList[index].name}
+                value={todos[index].name}
                 onChangeText={(text: string) =>
                   setRenderList((prev) => {
                     let temp = [...prev];
@@ -73,8 +74,9 @@ const Todos = () => {
                 onEndEditing={({ nativeEvent: { text } }) =>
                   dispatch(UPDATE_TODO({ _id, name: text, completed, priority }))
                 }
+                index={renderList.findIndex(t=> t._id===_id)}
               />
-            </View>
+            // </View>
           );
         })}
       </ScrollView>
@@ -135,6 +137,7 @@ interface TodoProps extends TextInputProps {
   setComplete: () => void;
   setDeleted: () => void;
   setPriority: () => void;
+  index: number
 }
 
 const Todo = ({
@@ -147,6 +150,7 @@ const Todo = ({
   setComplete,
   setDeleted,
   setPriority,
+  index
 }: TodoProps) => {
   // const [editing, setEditing] = useState(false);
   const { extraStyles } = StyleSheet.create({
@@ -157,6 +161,11 @@ const Todo = ({
     },
   });
   const positionX = useAnimatedValue(0);
+  const positionY = useAnimatedValue(index*60)
+
+  useEffect(()=>{
+    Animated.timing(positionY, {toValue: index*60, useNativeDriver: true}).start()
+  }, [index])
 
   const resetPosition = (callback?: () => void) => {
     Animated.timing(positionX, { toValue: 0, useNativeDriver: true }).start(callback);
@@ -211,7 +220,7 @@ const Todo = ({
   const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
   return (
-    <View style={{ width, height: 60, flexDirection: "row", alignItems: "center" }}>
+    <Animated.View style={{ position: 'absolute', transform: [{translateY: positionY  }], width, height: 60, flexDirection: "row", alignItems: "center" }}>
       <Text
         style={[
           GlobalStyles.text_medium,
@@ -290,6 +299,6 @@ const Todo = ({
 
         <RadioButton selected={completed} light onPress={setComplete} />
       </Animated.View>
-    </View>
+    </Animated.View>
   );
 };
