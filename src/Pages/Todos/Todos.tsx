@@ -51,31 +51,31 @@ const Todos = () => {
         {todos.map(({ name, completed, priority, _id }, index) => {
           return (
             // <View key={index} style={{ height: 60, alignItems: "center" }}>
-              <Todo
-                key={index}
-                setComplete={() =>
-                  dispatch(UPDATE_TODO({ _id, name, completed: !completed, priority }))
-                }
-                setPriority={() =>
-                  dispatch(UPDATE_TODO({ _id, completed, name, priority: !priority }))
-                }
-                setDeleted={() => {
-                  dispatch(DELETE_TODO({ _id, completed, name, priority }));
-                }}
-                {...{ completed, priority }}
-                value={todos[index].name}
-                onChangeText={(text: string) =>
-                  setRenderList((prev) => {
-                    let temp = [...prev];
-                    temp[index].name = text;
-                    return temp;
-                  })
-                }
-                onEndEditing={({ nativeEvent: { text } }) =>
-                  dispatch(UPDATE_TODO({ _id, name: text, completed, priority }))
-                }
-                index={renderList.findIndex(t=> t._id===_id)}
-              />
+            <Todo
+              key={index}
+              setComplete={() =>
+                dispatch(UPDATE_TODO({ _id, name, completed: !completed, priority }))
+              }
+              setPriority={() =>
+                dispatch(UPDATE_TODO({ _id, completed, name, priority: !priority }))
+              }
+              setDeleted={() => {
+                dispatch(DELETE_TODO({ _id, completed, name, priority }));
+              }}
+              {...{ completed, priority }}
+              value={todos[index].name}
+              onChangeText={(text: string) =>
+                setRenderList((prev) => {
+                  let temp = [...prev];
+                  temp[index].name = text;
+                  return temp;
+                })
+              }
+              onEndEditing={({ nativeEvent: { text } }) =>
+                dispatch(UPDATE_TODO({ _id, name: text, completed, priority }))
+              }
+              index={renderList.findIndex((t) => t._id === _id)}
+            />
             // </View>
           );
         })}
@@ -137,7 +137,7 @@ interface TodoProps extends TextInputProps {
   setComplete: () => void;
   setDeleted: () => void;
   setPriority: () => void;
-  index: number
+  index: number;
 }
 
 const Todo = ({
@@ -150,7 +150,7 @@ const Todo = ({
   setComplete,
   setDeleted,
   setPriority,
-  index
+  index,
 }: TodoProps) => {
   // const [editing, setEditing] = useState(false);
   const { extraStyles } = StyleSheet.create({
@@ -161,11 +161,11 @@ const Todo = ({
     },
   });
   const positionX = useAnimatedValue(0);
-  const positionY = useAnimatedValue(index*60)
+  const positionY = useAnimatedValue(index * 60);
 
-  useEffect(()=>{
-    Animated.timing(positionY, {toValue: index*60, useNativeDriver: true}).start()
-  }, [index])
+  useEffect(() => {
+    Animated.timing(positionY, { toValue: index * 60, useNativeDriver: true }).start();
+  }, [index]);
 
   const resetPosition = (callback?: () => void) => {
     Animated.timing(positionX, { toValue: 0, useNativeDriver: true }).start(callback);
@@ -220,7 +220,16 @@ const Todo = ({
   const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
   return (
-    <Animated.View style={{ position: 'absolute', transform: [{translateY: positionY  }], width, height: 60, flexDirection: "row", alignItems: "center" }}>
+    <Animated.View
+      style={{
+        position: "absolute",
+        transform: [{ translateY: positionY }],
+        width,
+        height: 60,
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
       <Text
         style={[
           GlobalStyles.text_medium,

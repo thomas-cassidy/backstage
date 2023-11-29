@@ -18,13 +18,14 @@ const FormLine = ({
   color = GlobalColors.text_primary,
   textContentType,
   onSubmitEditing,
+  autoCapitalize,
 }: FormLineProps) => {
   const styles = makeStyles(color);
   return (
     <View style={styles.formLine}>
       {label && <Text style={styles.text_label}>{label}</Text>}
       <TextInput
-        autoCapitalize="none"
+        autoCapitalize={autoCapitalize}
         textContentType={textContentType}
         editable={editing}
         style={styles.inputField}

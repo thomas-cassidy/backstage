@@ -18,7 +18,11 @@ import { GlobalColors, GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import { AppRoutes } from "../../Util/Routes";
 import { FormLine, PageHeader, RoundButton } from "../../Components";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
-import { UPDATE_CASTMEMBER_ASYNC } from "../../Redux/cast";
+import {
+  ADD_CASTMEMBER_ASYNC,
+  DELETE_CASTMEMBER_ASYNC,
+  UPDATE_CASTMEMBER_ASYNC,
+} from "../../Redux/cast";
 import { CastMember } from "../../Types/AppTypes";
 import { API_URI } from "../../Util/InitialState";
 import { REFRESH_ACCESS_TOKEN } from "../../Redux/auth";
@@ -55,8 +59,8 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
   const dispatch = useAppDispatch();
 
   const castMember = cast.find((c) => c._id === _id);
-  const [newCastMember] = useState(_id === "-1");
-  const [editing, setEditing] = useState(_id === "-1");
+  const [newCastMember] = useState(_id === "-1" || _id === -1);
+  const [editing, setEditing] = useState(_id === "-1" || _id === -1);
   const [hasChanges, setHasChanges] = useState(false);
   const [tempCastMember, setTempCastMember] = useState<CastMember>(
     castMember
@@ -127,7 +131,8 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
         }
       >
     ) => {
-      if (hasChanges) {
+      console.log(newCastMember);
+      if (!newCastMember && hasChanges) {
         e.preventDefault();
         Alert.alert("You have unsaved changes", "", [
           { text: "Cancel", style: "cancel" },
@@ -250,20 +255,23 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
           </TouchableOpacity>
           {editing && <RoundButton label="Set as Default" style={{ margin: 10 }} />}
         </View>
-        <ScrollView style={styles.form} contentContainerStyle={{paddingBottom: 63}}>
+        <ScrollView style={styles.form} contentContainerStyle={{ paddingBottom: 63 }}>
           <FormLine
+            autoCapitalize="sentences"
             label="Role"
             {...{ color, editing }}
             onChangeText={(e) => handleFormChange("role", e)}
             value={tempCastMember.role}
           />
           <FormLine
+            autoCapitalize="sentences"
             label="Name"
             {...{ color, editing }}
             onChangeText={(e) => handleFormChange("name", e)}
             value={tempCastMember.name}
           />
           <FormLine
+            autoCapitalize="sentences"
             label="Group"
             {...{ color, editing }}
             onChangeText={(e) => handleFormChange("category", e)}
@@ -289,8 +297,17 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
         <RoundButton
           label="Save"
           onPress={async () => {
-            // await dispatch(ADD_CASTMEMBER(tempCastMember));
-            navigation.goBack();
+            if (!tempCastMember.role) return Alert.alert("Cast member must have a role");
+            await dispatch(
+              ADD_CASTMEMBER_ASYNC({ castMember: tempCastMember, image: newImage })
+            ).then((e) => {
+              if (e.meta.requestStatus === "fulfilled") {
+                console.log("plop");
+                setHasChanges(false);
+                return navigation.goBack();
+              }
+              Alert.alert("Could not add Cast Member", "Network error occurred");
+            });
           }}
         />
       )}
@@ -299,10 +316,18 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
           label="Delete Cast Member"
           altColor
           onPress={async () => {
-            // !newCastMember
-            //   ? await dispatch(REMOVE_CASTMEMBER(tempCastMember))
-            //   : null;
-            navigation.goBack();
+            !newCastMember &&
+              Alert.alert("Are you sure you want to delete this cast member?", "", [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Delete",
+                  style: "destructive",
+                  onPress: async () =>
+                    await dispatch(DELETE_CASTMEMBER_ASYNC({ castMember: tempCastMember })).then(
+                      () => navigation.goBack()
+                    ),
+                },
+              ]);
           }}
         />
       )}
@@ -315,7 +340,6 @@ const makeStyles = (color: string, background: string) =>
     container: {
       ...GlobalStyles.container,
       backgroundColor: background,
-
     },
     imageSection: {
       width,

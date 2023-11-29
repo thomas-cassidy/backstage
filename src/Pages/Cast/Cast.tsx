@@ -9,7 +9,7 @@ import { CastMember } from "../../Types/AppTypes";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AppRoutes } from "../../Util/Routes";
 import { IStatusState, SET_HAS_SEEN_HINT } from "../../Redux/status";
-import { getCast } from "../../Redux/Helpers";
+import { getCast, getStatus } from "../../Redux/Helpers";
 
 const { width } = Dimensions.get("window");
 
@@ -21,21 +21,21 @@ interface RenderList {
   [group: string]: CastMember[];
 }
 
-const Container = ({navigation}:ContainerProps) => {
-  const cast = useAppSelector(getCast)
-  const status = useAppSelector(state => state.status)
+const Container = ({ navigation }: ContainerProps) => {
+  const cast = useAppSelector(getCast);
+  const status = useAppSelector(getStatus);
 
-  if (!cast || !status) return <Text>Oopsie</Text>
-  return <Cast {...{navigation, cast, status}}/>
-}
+  if (!cast || !status) return <Text>Oopsie</Text>;
+  return <Cast {...{ navigation, cast, status }} />;
+};
 
-interface InnerProps extends ContainerProps{
-  cast: CastMember[],
-  status: IStatusState
+interface InnerProps extends ContainerProps {
+  cast: CastMember[];
+  status: IStatusState;
 }
 
 const Cast = ({ navigation, cast, status }: InnerProps) => {
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
   const [castRenderList, setCastRenderList] = useState<RenderList>(() => {
     let state: RenderList = { uncategorised: [] };
@@ -77,9 +77,7 @@ const Cast = ({ navigation, cast, status }: InnerProps) => {
           if (castRenderList[category].length === 0) return;
           return (
             <View style={styles.page} key={index}>
-              <Text style={styles.groupHeader}>
-                {category != "uncategorised" && category}
-              </Text>
+              <Text style={styles.groupHeader}>{category != "uncategorised" && category}</Text>
               <ScrollView style={{ flex: 1 }}>
                 {castRenderList[category].map((castMember, i) => (
                   <CastMemberSmall key={i} {...{ castMember }} />
@@ -94,8 +92,12 @@ const Cast = ({ navigation, cast, status }: InnerProps) => {
         onPress={() => navigation.navigate("CastProfile", { _id: "-1" })}
       />
 
-      {!status.hasSeenCastHint && <OverlayInstruction message="Swipe to see other groups ->" callback={() => dispatch(SET_HAS_SEEN_HINT())}/> }
-
+      {!status.hasSeenCastHint && (
+        <OverlayInstruction
+          message="Swipe to see other groups ->"
+          callback={() => dispatch(SET_HAS_SEEN_HINT())}
+        />
+      )}
     </SafeAreaView>
   );
 };
