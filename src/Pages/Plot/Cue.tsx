@@ -16,7 +16,7 @@ interface Props {
   cuePoint?: string;
   location?: string;
   notes?: string;
-  castInCue?: number[];
+  castInCue?: (string | number)[];
   next?: string;
   onNext?: () => void;
   editing: boolean;
@@ -173,7 +173,6 @@ const Cue = ({
                       key={i}
                       style={{ width: undefined }}
                       onPress={() => {
-                        console.log("pressed");
                         navigation.navigate("CastProfile", {
                           _id: c._id,
                         });

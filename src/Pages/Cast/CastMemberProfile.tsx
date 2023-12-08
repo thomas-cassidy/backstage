@@ -30,6 +30,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faChevronLeft, faChevronRight, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { getAuth, getCast } from "../../Redux/Helpers";
 import * as ImagePicker from "expo-image-picker";
+import DismissKeyboard from "../../Components/DismissKeyboard";
 
 const { width } = Dimensions.get("window");
 
@@ -166,6 +167,7 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
       allowsEditing: true,
     });
     if (result.assets) {
+      console.log("image asset", result.assets[0]);
       setHasChanges(true);
       setNewImage(result.assets[0]);
     }
@@ -185,153 +187,155 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
       };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView behavior="position" style={{ flex: 1 }}>
-        <PageHeader
-          label={editing ? "Edit Mode" : tempCastMember.name}
-          light={!editing}
-          edit
-          onEdit={() => setEditing((prev) => !prev)}
-          back
-          onBack={() => navigation.goBack()}
-        />
-        <View style={styles.imageSection}>
-          <TouchableOpacity disabled={!editing} activeOpacity={0.8} onPress={() => pickImage()}>
-            <TouchableOpacity
-              style={{
-                height: 50,
-                position: "absolute",
-                top: image_size / 2 - 25,
-                left: -60,
-                zIndex: 10,
-                elevation: 10,
-              }}
-              onPress={decImage}
-            >
-              <FontAwesomeIcon
-                icon={faChevronLeft}
-                size={40}
-                color={editing ? GlobalColors.background : GlobalColors.text_primary}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                height: 50,
-                position: "absolute",
-                top: image_size / 2 - 25,
-                right: -60,
-                zIndex: 10,
-                elevation: 10,
-              }}
-              onPress={incImage}
-            >
-              <FontAwesomeIcon
-                icon={faChevronRight}
-                size={40}
-                color={editing ? GlobalColors.background : GlobalColors.text_primary}
-              />
-            </TouchableOpacity>
-            {editing && (
+    <DismissKeyboard>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView behavior="position" style={{ flex: 1 }}>
+          <PageHeader
+            label={editing ? "Edit Mode" : tempCastMember.name}
+            light={!editing}
+            edit
+            onEdit={() => setEditing((prev) => !prev)}
+            back
+            onBack={() => navigation.goBack()}
+          />
+          <View style={styles.imageSection}>
+            <TouchableOpacity disabled={!editing} activeOpacity={0.8} onPress={() => pickImage()}>
               <TouchableOpacity
-                //add some delete function in here
                 style={{
+                  height: 50,
                   position: "absolute",
-                  right: 10,
-                  top: 10,
+                  top: image_size / 2 - 25,
+                  left: -60,
                   zIndex: 10,
                   elevation: 10,
                 }}
+                onPress={decImage}
               >
-                <FontAwesomeIcon icon={faTrashAlt} color={"darkred"} size={25} />
+                <FontAwesomeIcon
+                  icon={faChevronLeft}
+                  size={40}
+                  color={editing ? GlobalColors.background : GlobalColors.text_primary}
+                />
               </TouchableOpacity>
-            )}
-            <Image
-              source={imageSource}
-              onError={(err) => {
-                dispatch(REFRESH_ACCESS_TOKEN());
-              }}
-              style={styles.image}
-            />
-          </TouchableOpacity>
-          {editing && <RoundButton label="Set as Default" style={{ margin: 10 }} />}
-        </View>
-        <ScrollView style={styles.form} contentContainerStyle={{ paddingBottom: 63 }}>
-          <FormLine
-            autoCapitalize="sentences"
-            label="Role"
-            {...{ color, editing }}
-            onChangeText={(e) => handleFormChange("role", e)}
-            value={tempCastMember.role}
-          />
-          <FormLine
-            autoCapitalize="sentences"
-            label="Name"
-            {...{ color, editing }}
-            onChangeText={(e) => handleFormChange("name", e)}
-            value={tempCastMember.name}
-          />
-          <FormLine
-            autoCapitalize="sentences"
-            label="Group"
-            {...{ color, editing }}
-            onChangeText={(e) => handleFormChange("category", e)}
-            value={tempCastMember.category ? tempCastMember.category : ""}
-          />
-          <View style={styles.notesSection}>
-            <Text style={styles.text_label}>Notes:</Text>
-            <TextInput
-              editable={editing}
-              multiline
-              style={{
-                ...GlobalStyles.text_medium,
-                color,
-                flex: 1,
-              }}
-              onChangeText={(e) => handleFormChange("notes", e)}
-              value={tempCastMember.notes}
-            />
+              <TouchableOpacity
+                style={{
+                  height: 50,
+                  position: "absolute",
+                  top: image_size / 2 - 25,
+                  right: -60,
+                  zIndex: 10,
+                  elevation: 10,
+                }}
+                onPress={incImage}
+              >
+                <FontAwesomeIcon
+                  icon={faChevronRight}
+                  size={40}
+                  color={editing ? GlobalColors.background : GlobalColors.text_primary}
+                />
+              </TouchableOpacity>
+              {editing && (
+                <TouchableOpacity
+                  //add some delete function in here
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: 10,
+                    zIndex: 10,
+                    elevation: 10,
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTrashAlt} color={"darkred"} size={25} />
+                </TouchableOpacity>
+              )}
+              <Image
+                source={imageSource}
+                onError={(err) => {
+                  dispatch(REFRESH_ACCESS_TOKEN());
+                }}
+                style={styles.image}
+              />
+            </TouchableOpacity>
+            {editing && <RoundButton label="Set as Default" style={{ margin: 10 }} />}
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-      {editing && newCastMember && (
-        <RoundButton
-          label="Save"
-          onPress={async () => {
-            if (!tempCastMember.role) return Alert.alert("Cast member must have a role");
-            await dispatch(
-              ADD_CASTMEMBER_ASYNC({ castMember: tempCastMember, image: newImage })
-            ).then((e) => {
-              if (e.meta.requestStatus === "fulfilled") {
-                console.log("plop");
-                setHasChanges(false);
-                return navigation.goBack();
-              }
-              Alert.alert("Could not add Cast Member", "Network error occurred");
-            });
-          }}
-        />
-      )}
-      {editing && (
-        <RoundButton
-          label="Delete Cast Member"
-          altColor
-          onPress={async () => {
-            !newCastMember &&
-              Alert.alert("Are you sure you want to delete this cast member?", "", [
-                { text: "Cancel", style: "cancel" },
-                {
-                  text: "Delete",
-                  style: "destructive",
-                  onPress: async () =>
-                    await dispatch(DELETE_CASTMEMBER_ASYNC({ castMember: tempCastMember })).then(
-                      () => navigation.goBack()
-                    ),
-                },
-              ]);
-          }}
-        />
-      )}
-    </SafeAreaView>
+          <ScrollView style={styles.form} contentContainerStyle={{ paddingBottom: 63 }}>
+            <FormLine
+              autoCapitalize="sentences"
+              label="Role"
+              {...{ color, editing }}
+              onChangeText={(e) => handleFormChange("role", e)}
+              value={tempCastMember.role}
+            />
+            <FormLine
+              autoCapitalize="sentences"
+              label="Name"
+              {...{ color, editing }}
+              onChangeText={(e) => handleFormChange("name", e)}
+              value={tempCastMember.name}
+            />
+            <FormLine
+              autoCapitalize="sentences"
+              label="Group"
+              {...{ color, editing }}
+              onChangeText={(e) => handleFormChange("category", e)}
+              value={tempCastMember.category ? tempCastMember.category : ""}
+            />
+            <View style={styles.notesSection}>
+              <Text style={styles.text_label}>Notes:</Text>
+              <TextInput
+                editable={editing}
+                multiline
+                style={{
+                  ...GlobalStyles.text_medium,
+                  color,
+                  flex: 1,
+                }}
+                onChangeText={(e) => handleFormChange("notes", e)}
+                value={tempCastMember.notes}
+              />
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+        {editing && newCastMember && (
+          <RoundButton
+            label="Save"
+            onPress={async () => {
+              if (!tempCastMember.role) return Alert.alert("Cast member must have a role");
+              await dispatch(
+                ADD_CASTMEMBER_ASYNC({ castMember: tempCastMember, image: newImage })
+              ).then((e) => {
+                if (e.meta.requestStatus === "fulfilled") {
+                  console.log("plop");
+                  setHasChanges(false);
+                  return navigation.goBack();
+                }
+                Alert.alert("Could not add Cast Member", "Network error occurred");
+              });
+            }}
+          />
+        )}
+        {editing && (
+          <RoundButton
+            label="Delete Cast Member"
+            altColor
+            onPress={async () => {
+              !newCastMember &&
+                Alert.alert("Are you sure you want to delete this cast member?", "", [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () =>
+                      await dispatch(DELETE_CASTMEMBER_ASYNC({ castMember: tempCastMember })).then(
+                        () => navigation.goBack()
+                      ),
+                  },
+                ]);
+            }}
+          />
+        )}
+      </SafeAreaView>
+    </DismissKeyboard>
   );
 };
 

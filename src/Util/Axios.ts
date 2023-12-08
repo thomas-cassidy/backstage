@@ -24,7 +24,6 @@ export const useInterceptors = (): number[] => {
     setReqInterceptor(() =>
       AXIOS_API.interceptors.request.use(
         async (config) => {
-          //   console.log("request interceptor");
           if (!config.headers || !config.headers["x-access-token"]) {
             config.headers = {
               "x-access-token": auth.ACCESS_TOKEN,

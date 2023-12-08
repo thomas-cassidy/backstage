@@ -10,7 +10,7 @@ export const GlobalColors = {
   background: "hsl(220, 13%, 18%)",
   text_primary: "#fff",
   secondary: "#af9650",
-  tertiary: "pink",
+  tertiary: "#d46161",
 };
 // export const GlobalColors = {
 //   background: "hsl(220, 13%, 18%)",
@@ -23,7 +23,7 @@ export const EditColors: typeof GlobalColors = {
   background: GlobalColors.text_primary,
   text_primary: GlobalColors.background,
   secondary: "#ffb600",
-  tertiary: "df160d",
+  tertiary: "#df160d",
 };
 
 export const font_main = "Futura";

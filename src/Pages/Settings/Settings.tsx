@@ -1,38 +1,46 @@
-import React from "react";
-import { PageHeader, RoundButton } from "../../Components";
+import React, { useState } from "react";
+import { FormLine, PageHeader, Picker, RoundButton } from "../../Components";
 import { useAppDispatch } from "../../Redux/hooks";
 import { LOGOUT_ASYNC } from "../../Redux/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { GlobalStyles } from "../../Util/GlobalStyles";
+import { GlobalStyles, Sizes } from "../../Util/GlobalStyles";
+import DismissKeyboard from "../../Components/DismissKeyboard";
+import { KeyboardAvoidingView, Text, TouchableOpacity } from "react-native";
+import { ItemValue } from "@react-native-picker/picker/typings/Picker";
 const { container } = GlobalStyles;
 
 type Props = {};
 
+const options: ItemValue[] = ["plop1", "plop2", "plop3", "plop4"];
+
 const Settings = (props: Props) => {
   const dispatch = useAppDispatch();
-  // const state = useAppSelector((state) => state);
+  const [showPicker, setShowPicker] = useState(false);
+  const [selected, setSelected] = useState(options[0]);
+
   return (
     <SafeAreaView style={container}>
       <PageHeader label="Settings" />
-      <RoundButton label="Log Out" onPress={() => dispatch(LOGOUT_ASYNC())} />
-      {/* <RoundButton label="Check State" onPress={async () => console.log(state)} />
-      <RoundButton
-        label="Purge data"
-        onPress={async () => {
-          await storePersistor.purge();
-        }}
-      />
-      <RoundButton
-        label="Refresh Access"
-        onPress={async () => {
-          const NEW_ACCESS_TOKEN = await refreshAccessToken();
-          console.log(NEW_ACCESS_TOKEN);
-        }}
-      />
-      <RoundButton
-        label="Show Access Token"
-        onPress={async () => console.log(state.auth.ACCESS_TOKEN)}
-      /> */}
+      <DismissKeyboard>
+        <KeyboardAvoidingView
+          style={[container, { paddingHorizontal: Sizes.m, justifyContent: "space-evenly" }]}
+          behavior="padding"
+        >
+          {/* <FormLine editing={true} value="This doesn't work yet" label="Change Password" />
+
+          <TouchableOpacity onPress={() => setShowPicker(!showPicker)}>
+            <Text style={GlobalStyles.text_medium}>{selected}</Text>
+            <Picker
+              visible={showPicker}
+              value={selected}
+              options={options}
+              handleSelect={(v, i) => setSelected(v)}
+              handleClose={() => setShowPicker(false)}
+            />
+          </TouchableOpacity> */}
+          <RoundButton label="Log Out" onPress={() => dispatch(LOGOUT_ASYNC())} />
+        </KeyboardAvoidingView>
+      </DismissKeyboard>
     </SafeAreaView>
   );
 };

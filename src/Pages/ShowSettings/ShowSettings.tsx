@@ -6,7 +6,8 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { AppRoutes } from "../../Util/Routes";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import Swipeable from "../../Components/Swipeable";
-import { ADD_GROUP, DELETE_GROUP, UPDATE_GROUP } from "../../Redux/cast";
+import { DELETE_GROUP, UPDATE_GROUP } from "../../Redux/cast";
+import { DELETE_SHOW } from "../../Redux/show";
 
 interface Props {
   navigation: StackNavigationProp<AppRoutes, "ShowSettings">;
@@ -16,8 +17,21 @@ const ShowSettings = ({ navigation }: Props) => {
   const show = useAppSelector((state) => state.show);
   const dispatch = useAppDispatch();
 
+  const handleDelete = () => {
+    Alert.alert("Are you sure you wish to delete this show?", "This action can not be undone", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          dispatch(DELETE_SHOW());
+        },
+      },
+    ]);
+  };
+
   return (
-    <PageContainer>
+    <PageContainer light={false}>
       <PageHeader label="Settings" back onBack={() => navigation.goBack()} />
       <ScrollView style={{ padding: Sizes.m }}>
         <FormLine
@@ -28,7 +42,7 @@ const ShowSettings = ({ navigation }: Props) => {
           onChange={() => null}
         />
         <Spacer />
-        <SectionLabel label="Cast Groups" />
+        {/* <SectionLabel label="Cast Groups" />
         <CastGroups />
         <View style={{ alignItems: "flex-end" }}>
           <RoundButton
@@ -37,7 +51,7 @@ const ShowSettings = ({ navigation }: Props) => {
               Alert.prompt("Enter a group name", "", (text) => dispatch(ADD_GROUP(text)))
             }
           />
-        </View>
+        </View> */}
 
         {show.accessList && (
           <>
@@ -53,6 +67,12 @@ const ShowSettings = ({ navigation }: Props) => {
             ))}
           </>
         )}
+        <RoundButton
+          label="Delete Show"
+          altColor
+          style={{ marginTop: Sizes.m }}
+          onPress={handleDelete}
+        />
       </ScrollView>
     </PageContainer>
   );

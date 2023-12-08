@@ -1,12 +1,22 @@
 import { useNavigation } from "@react-navigation/core";
 import { StackNavigationProp } from "@react-navigation/stack";
-import React from "react";
-import { View, Text, StyleSheet, Dimensions, Image, Pressable } from "react-native";
+import React, { useCallback, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Image,
+  Pressable,
+  ImageErrorEventData,
+  NativeSyntheticEvent,
+} from "react-native";
 import { useAppSelector } from "../../Redux/hooks";
 import { CastMember } from "../../Types/AppTypes";
 import { GlobalColors, GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import { AppRoutes } from "../../Util/Routes";
 import { API_URI } from "../../Util/InitialState";
+import { refreshAccessToken } from "../../Util/RefreshAccessToken";
 
 const { width } = Dimensions.get("window");
 
@@ -19,6 +29,15 @@ const image_size = 110;
 const CastMemberSmall = ({ castMember }: Props) => {
   const navigation = useNavigation<StackNavigationProp<AppRoutes, "Cast">>();
   const { ACCESS_TOKEN } = useAppSelector((state) => state.auth);
+  const [imageRetry, setImageRetry] = useState(0);
+
+  const onError = useCallback(async (err: NativeSyntheticEvent<ImageErrorEventData>) => {
+    console.log("image error", err.nativeEvent.error);
+    if (imageRetry === 0) {
+      await refreshAccessToken();
+      setImageRetry((prev) => prev + 1);
+    }
+  }, []);
 
   return (
     <Pressable
@@ -27,6 +46,7 @@ const CastMemberSmall = ({ castMember }: Props) => {
     >
       <View style={{ flexDirection: "row", marginBottom: Sizes.s }}>
         <Image
+          key={`Image-${imageRetry}`}
           source={
             castMember.images?.length
               ? {
@@ -38,9 +58,7 @@ const CastMemberSmall = ({ castMember }: Props) => {
               : require("../../Assets/placeholder_headshot.png")
           }
           style={styles.image}
-          onError={(err) => {
-            console.log("image error", err.nativeEvent.error);
-          }}
+          onError={onError}
         />
         <View style={styles.text_right}>
           <Text style={GlobalStyles.text_label}>Role:</Text>

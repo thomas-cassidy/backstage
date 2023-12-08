@@ -2,12 +2,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosResponse } from "axios";
 import { API_URI } from "../Util/InitialState";
 import * as secureStore from "expo-secure-store";
-import { User } from "../Types/AppTypes";
+import { ExpectedServerFailure, User } from "../Types/AppTypes";
 import { fetchShowNames } from "../Util/FetchShowNames";
-import { SET_USER } from "./user";
+import { ADD_SHOW_TO_USER, SET_USER } from "./user";
 import { SET_LOADED, SET_LOADING } from "./status";
 import { refreshAccessToken } from "../Util/RefreshAccessToken";
 import { Alert } from "react-native";
+import { RootState } from "./store";
 
 export interface IAuthState {
   status: "loading" | "idle";
@@ -108,6 +109,37 @@ export const REFRESH_ACCESS_TOKEN = createAsyncThunk(
   }
 );
 
+interface ExpectedServerSuccessAuthorize {
+  status: "ok";
+  show: {
+    _id: string | number;
+  };
+  message: string;
+}
+
+export const ACCESS_SHOW = createAsyncThunk<
+  { _id: string | number },
+  { _id: string | number; name: string; password: string },
+  { state: RootState }
+>("auth/ACCESS_SHOW", async ({ _id, name, password }, { getState, dispatch }) => {
+  try {
+    const response = await axios.post<ExpectedServerSuccessAuthorize | ExpectedServerFailure>(
+      `${API_URI}/shows/authorize`,
+      {
+        _id,
+        password,
+      },
+      { headers: { "x-access-token": getState().auth.ACCESS_TOKEN } }
+    );
+    if (response.data.status === "error") throw response.data.error;
+    dispatch(ADD_SHOW_TO_USER({ _id, name }));
+    return response.data.show;
+  } catch (e) {
+    console.log("shows authorize error", e);
+    return Promise.reject("Could not authorize access to show");
+  }
+});
+
 const auth = createSlice({
   name: "auth",
   initialState,
@@ -156,6 +188,7 @@ const auth = createSlice({
     builder.addCase(LOGOUT_ASYNC.rejected, (state) => {
       return { ...state, loggedIn: false, ACCESS_TOKEN: "" };
     });
+    builder.addCase(ACCESS_SHOW.fulfilled, (state, { payload }) => {});
   },
 });
 

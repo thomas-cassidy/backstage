@@ -25,6 +25,7 @@ const FormLine = ({
     <View style={styles.formLine}>
       {label && <Text style={styles.text_label}>{label}</Text>}
       <TextInput
+        selectionColor={GlobalColors.tertiary}
         autoCapitalize={autoCapitalize}
         textContentType={textContentType}
         editable={editing}
@@ -32,9 +33,8 @@ const FormLine = ({
         onChangeText={(e) => onChangeText(e)}
         secureTextEntry={textContentType === "password"}
         onSubmitEditing={onSubmitEditing}
-      >
-        {value}
-      </TextInput>
+        value={value}
+      />
     </View>
   );
 };

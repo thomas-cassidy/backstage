@@ -9,3 +9,4 @@ export { default as ImagePicker } from "./ImagePicker";
 export { default as PageContainer } from "./PageContainer";
 export { default as Spacer } from "./Spacer";
 export { default as OverlayInstruction } from "./OverlayInstruction";
+export { default as Picker } from "./Picker";

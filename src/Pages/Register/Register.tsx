@@ -16,6 +16,7 @@ import { validateEmail, validateName, validatePassword } from "../../Util/FormVa
 import { CLEAR_ERROR, REGISTER } from "../../Redux/auth";
 import { SET_LOADED } from "../../Redux/status";
 import { getAuth } from "../../Redux/Helpers";
+import DismissKeyboard from "../../Components/DismissKeyboard";
 
 const { text_small, container } = GlobalStyles;
 
@@ -28,10 +29,10 @@ const NO_ERRORS = { name: "", email: "", password: "" };
 const Register = ({ navigation }: Props) => {
   const dispatch = useAppDispatch();
   const { error } = useAppSelector(getAuth);
-  const [name, setName] = useState("Test User 2");
-  const [email, setEmail] = useState("plop@testuser.com");
-  const [password, setPassword] = useState("Plop1234");
-  const [password2, setPassword2] = useState("Plop1234");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
   const [errors, setErrors] = useState({ ...NO_ERRORS });
   const nameErrorHeight = useAnimatedValue(Sizes.m);
   const emailErrorHeight = useAnimatedValue(Sizes.m);
@@ -100,95 +101,97 @@ const Register = ({ navigation }: Props) => {
   return (
     <SafeAreaView style={container}>
       <PageHeader label="theatreBackstage" />
-      <KeyboardAvoidingView
-        behavior="padding"
-        style={{
-          flex: 1,
-          width: "100%",
-          paddingHorizontal: Sizes.l,
-          justifyContent: "center",
-        }}
-      >
-        {error && (
-          <Animated.View
-            style={{
-              zIndex: 2,
-              width: "90%",
-              position: "absolute",
-              opacity: opacityRef,
-              left: "15%",
-              top: 0,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: Sizes.m,
-                paddingVertical: Sizes.s,
-              }}
-              onPress={() => dispatch(CLEAR_ERROR())}
-            >
-              <Text
-                style={{
-                  ...GlobalStyles.text_medium,
-                  color: GlobalColors.tertiary,
-                }}
-              >
-                {error}
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
-        )}
-        <FormLine
-          label="name"
-          color="white"
-          editing={true}
-          onChangeText={(e) => setName(e)}
-          value={name}
-          textContentType={"username"}
-        />
-        <Animated.View style={{ height: nameErrorHeight, overflow: "hidden" }}>
-          {errors.name ? <FormError text={errors.name} /> : null}
-        </Animated.View>
-        <FormLine
-          label="email"
-          color="white"
-          editing={true}
-          onChangeText={(e) => setEmail(e)}
-          value={email}
-          textContentType={"emailAddress"}
-        />
-        <Animated.View style={{ height: emailErrorHeight, overflow: "hidden" }}>
-          {errors.email ? <FormError text={errors.email} /> : null}
-        </Animated.View>
-        <FormLine
-          label="password"
-          color="white"
-          editing={true}
-          onChangeText={(e) => setPassword(e)}
-          value={password}
-          textContentType={"password"}
-        />
-        <Animated.View style={{ height: passwordErrorHeight, overflow: "hidden" }}>
-          {errors.password ? <FormError text={errors.password} /> : null}
-        </Animated.View>
-        <FormLine
-          label="re-enter password"
-          color="white"
-          editing={true}
-          onChangeText={(e) => setPassword2(e)}
-          value={password2}
-          textContentType={"password"}
-        />
-      </KeyboardAvoidingView>
-      <RoundButton label="Register" onPress={handleSubmit} />
       <View style={{ flexDirection: "row", paddingVertical: Sizes.s }}>
         <Text style={{ ...text_small, marginRight: Sizes.s }}>Already have an account?</Text>
         <TouchableOpacity onPress={() => navigation.pop()}>
           <Text style={{ ...text_small, color: GlobalColors.tertiary }}>Press here Login</Text>
         </TouchableOpacity>
       </View>
+      <DismissKeyboard>
+        <KeyboardAvoidingView
+          behavior="padding"
+          style={{
+            flex: 1,
+            width: "100%",
+            paddingHorizontal: Sizes.l,
+            justifyContent: "center",
+          }}
+        >
+          {error && (
+            <Animated.View
+              style={{
+                zIndex: 2,
+                width: "90%",
+                position: "absolute",
+                opacity: opacityRef,
+                left: "15%",
+                top: 0,
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: Sizes.m,
+                  paddingVertical: Sizes.s,
+                }}
+                onPress={() => dispatch(CLEAR_ERROR())}
+              >
+                <Text
+                  style={{
+                    ...GlobalStyles.text_medium,
+                    color: GlobalColors.tertiary,
+                  }}
+                >
+                  {error}
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+          <FormLine
+            label="name"
+            color="white"
+            editing={true}
+            onChangeText={(e) => setName(e)}
+            value={name}
+            textContentType={"username"}
+          />
+          <Animated.View style={{ height: nameErrorHeight, overflow: "hidden" }}>
+            {errors.name ? <FormError text={errors.name} /> : null}
+          </Animated.View>
+          <FormLine
+            label="email"
+            color="white"
+            editing={true}
+            onChangeText={(e) => setEmail(e)}
+            value={email}
+            textContentType={"emailAddress"}
+          />
+          <Animated.View style={{ height: emailErrorHeight, overflow: "hidden" }}>
+            {errors.email ? <FormError text={errors.email} /> : null}
+          </Animated.View>
+          <FormLine
+            label="password"
+            color="white"
+            editing={true}
+            onChangeText={(e) => setPassword(e)}
+            value={password}
+            textContentType={"password"}
+          />
+          <Animated.View style={{ height: passwordErrorHeight, overflow: "hidden" }}>
+            {errors.password ? <FormError text={errors.password} /> : null}
+          </Animated.View>
+          <FormLine
+            label="re-enter password"
+            color="white"
+            editing={true}
+            onChangeText={(e) => setPassword2(e)}
+            value={password2}
+            textContentType={"password"}
+          />
+        </KeyboardAvoidingView>
+      </DismissKeyboard>
+      <RoundButton label="Register" onPress={handleSubmit} />
     </SafeAreaView>
   );
 };

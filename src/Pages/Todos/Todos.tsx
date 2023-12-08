@@ -186,7 +186,6 @@ const Todo = ({
     },
     onPanResponderRelease: (_, { dx, dy }) => {
       if (dx < 5 && dy < 5) {
-        console.log("plop");
         textInputRef.current?.focus();
       }
       if (dx > width / 3)

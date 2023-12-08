@@ -16,7 +16,5 @@ export const refreshAccessToken = async (): Promise<string> => {
     }
   );
 
-  // console.log("refreshAccessToken", response.data.ACCESS_TOKEN);
-
   return response.data.ACCESS_TOKEN;
 };

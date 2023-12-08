@@ -20,6 +20,7 @@ import { useInterceptors } from "./Axios";
 // import { ImagePicker } from "../Components";
 import { ShowSettings } from "../Pages/ShowSettings";
 import { AppRoutes } from "./Routes";
+import { Search } from "../Pages/Dashboard";
 
 const MainStack = createStackNavigator<AppRoutes>();
 
@@ -43,6 +44,11 @@ const Navigator = () => {
         ) : (
           <>
             <MainStack.Screen component={Dashboard} name={"Dashboard"} />
+            <MainStack.Screen
+              component={Search}
+              name={"Search"}
+              options={{ presentation: "modal" }}
+            />
             <MainStack.Screen
               component={NewShow}
               name={"NewShow"}

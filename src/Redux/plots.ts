@@ -40,7 +40,7 @@ export const ADD_PLOT_ASYNC = createAsyncThunk<Plot[], string, { state: RootStat
     }
   }
 );
-export const UPDATE_CUE_ASYNC = createAsyncThunk<Plot[], number, { state: RootState }>(
+export const UPDATE_CUE_ASYNC = createAsyncThunk<Plot[], string | number, { state: RootState }>(
   "plots/UPDATE_PLOT_ASYNC",
   async (_id, { getState, dispatch }) => {
     try {
@@ -91,11 +91,11 @@ export const plotSlice = createSlice({
         _id: newId,
       });
     },
-    ADD_CUE: ({ plots }, { payload }: PayloadAction<{ _id: number; index: number }>) => {
+    ADD_CUE: ({ plots }, { payload }: PayloadAction<{ _id: string | number; index: number }>) => {
       plots.map((p, i) => {
         if (p._id === payload._id)
           p.cues.splice(payload.index + 1, 0, {
-            _id: Math.random(),
+            _id: Math.random().toString(),
             cuePoint: "",
             location: "",
             notes: "",
@@ -103,7 +103,10 @@ export const plotSlice = createSlice({
           });
       });
     },
-    DELETE_CUE: ({ plots }, { payload }: PayloadAction<{ _id: number; index: number }>) => {
+    DELETE_CUE: (
+      { plots },
+      { payload }: PayloadAction<{ _id: string | number; index: number }>
+    ) => {
       if (plots.length === 1) return;
       plots.map((p, i) => {
         if (p._id === payload._id) p.cues.splice(payload.index, 1);
@@ -114,7 +117,7 @@ export const plotSlice = createSlice({
       {
         payload: { _id, index, field, value },
       }: PayloadAction<{
-        _id: number;
+        _id: string | number;
         index: number;
         field: keyof CueType;
         value: string | number;
@@ -127,7 +130,6 @@ export const plotSlice = createSlice({
           if (field !== "castMembers") p.cues[index][field] = value;
         }
         if (field === "castMembers") {
-          console.log(value);
           if (p.cues[index].castMembers.indexOf(value) != -1) {
             p.cues[index].castMembers.splice(p.cues[index].castMembers.indexOf(value), 1);
           } else {

@@ -8,6 +8,7 @@ import { RootState } from "./store";
 import { SET_TODOS } from "./todos";
 import { Alert } from "react-native";
 import { AXIOS_API } from "../Util/Axios";
+import { ADD_SHOW_TO_USER } from "./user";
 
 export type ShowState = {
   _id: number | string;
@@ -30,6 +31,40 @@ interface ExpectedServerFailure {
   status: "error";
   error: string;
 }
+
+export const ADD_SHOW = createAsyncThunk<
+  ShowState,
+  { name: string; password: string; confirmPassword: string }
+>("show/ADD_SHOW", async ({ name, password, confirmPassword }, { dispatch, getState }) => {
+  dispatch(SET_LOADING());
+
+  try {
+    let { data } = await AXIOS_API.post<ExpectedServerSuccess | ExpectedServerFailure>("/shows", {
+      name,
+      password,
+      confirmPassword,
+    });
+
+    if (data.status === "error") throw data.error;
+
+    dispatch(SET_CAST(data.show.cast));
+    dispatch(SET_PLOTS(data.show.plots));
+    dispatch(SET_TODOS(data.show.todos));
+    dispatch(ADD_SHOW_TO_USER({ _id: data.show._id, name: data.show.name }));
+    dispatch(SET_LOADED());
+
+    return {
+      _id: data.show._id,
+      name: data.show.name,
+      owner: data.show.owner,
+      accessList: data.show.accessList,
+    };
+  } catch (e) {
+    console.log("ADD SHOW error", e);
+    dispatch(SET_LOADED());
+    return Promise.reject(`Server rejected your request. ${e}`);
+  }
+});
 
 export const GET_SHOW_ASYNC = createAsyncThunk<
   ShowState,
@@ -130,8 +165,24 @@ export const SEARCH = createAsyncThunk<ISearchResult, { search: string }, { stat
       }
     } catch (e) {
       dispatch(SET_LOADED());
-      console.log(e);
+      console.log("error in search", e);
       return Promise.reject("Server rejected your request.");
+    }
+  }
+);
+
+export const DELETE_SHOW = createAsyncThunk<any, undefined, { state: RootState }>(
+  "shows/DELETE_SHOW",
+  async (_, { getState, dispatch }) => {
+    try {
+      const response = await AXIOS_API.delete<ExpectedServerSuccess | ExpectedServerFailure>(
+        `/shows/${getState().show.name}`
+      );
+      if (response.data.status === "error") throw response.data.error;
+      else return;
+    } catch (e) {
+      console.log("Delete show error", e);
+      return Promise.reject(e);
     }
   }
 );
@@ -145,18 +196,31 @@ const showSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(GET_SHOW_ASYNC.fulfilled, ({ accessList, name, owner }, { payload }) => {
+    builder.addCase(GET_SHOW_ASYNC.fulfilled, (_, { payload }) => {
       return payload;
     });
-    builder.addCase(GET_SHOW_ASYNC.rejected, (x, y) => {
-      Alert.alert("Could not get new data");
-      return;
+    builder.addCase(GET_SHOW_ASYNC.rejected, () => {
+      return Alert.alert("Could not get new data");
     });
-    builder.addCase(GET_SHOW_BACKGROUND.fulfilled, ({ accessList, name, owner }, { payload }) => {
+    builder.addCase(GET_SHOW_BACKGROUND.fulfilled, (_, { payload }) => {
       return payload;
     });
-    builder.addCase(SEARCH.fulfilled, (state, { payload }) => {});
-    builder.addCase(SEARCH.rejected, () => {});
+    builder.addCase(SEARCH.fulfilled, () => {});
+    builder.addCase(SEARCH.rejected, () => {
+      return Alert.alert("Search has failed for some reason or other");
+    });
+    builder.addCase(ADD_SHOW.fulfilled, (_, { payload }) => {
+      return payload;
+    });
+    builder.addCase(ADD_SHOW.rejected, (_, { error }) => {
+      if (error.message) return Alert.alert(error.message);
+    });
+    builder.addCase(DELETE_SHOW.fulfilled, () => {
+      return initialState;
+    });
+    builder.addCase(DELETE_SHOW.rejected, (_, { error }) => {
+      return Alert.alert("Failed to delete show", error.message);
+    });
   },
 });
 
