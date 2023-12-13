@@ -59,6 +59,7 @@ const Cast = ({ navigation, cast, status }: InnerProps) => {
           state[c.category].push(c);
         } else state[c.category] = [c];
       });
+
       return state;
     });
   }, [cast]);
@@ -73,19 +74,23 @@ const Cast = ({ navigation, cast, status }: InnerProps) => {
         decelerationRate={"fast"}
         snapToInterval={width}
       >
-        {Object.keys(castRenderList).map((category, index) => {
-          if (castRenderList[category].length === 0) return;
-          return (
-            <View style={styles.page} key={index}>
-              <Text style={styles.groupHeader}>{category != "uncategorised" && category}</Text>
-              <ScrollView style={{ flex: 1 }}>
-                {castRenderList[category].map((castMember, i) => (
-                  <CastMemberSmall key={i} {...{ castMember }} />
-                ))}
-              </ScrollView>
-            </View>
-          );
-        })}
+        {Object.keys(castRenderList)
+          .sort()
+          .map((category, index) => {
+            if (castRenderList[category].length === 0) return;
+            return (
+              <View style={styles.page} key={index}>
+                <Text style={styles.groupHeader}>{category != "uncategorised" && category}</Text>
+                <ScrollView style={{ flex: 1 }}>
+                  {castRenderList[category]
+                    .sort((a, b) => a.role.charCodeAt(0) - b.role.charCodeAt(0))
+                    .map((castMember, i) => (
+                      <CastMemberSmall key={i} {...{ castMember }} />
+                    ))}
+                </ScrollView>
+              </View>
+            );
+          })}
       </ScrollView>
       <RoundButton
         label={"Add Cast Member"}

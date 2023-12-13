@@ -1,67 +1,145 @@
-import { Text, StyleSheet, TouchableOpacity, Animated } from "react-native";
-import React, { PropsWithChildren } from "react";
-import { FORM_LINE_HEIGHT, GlobalColors, GlobalStyles, Sizes } from "../Util/GlobalStyles";
-import { Swipeable } from "react-native-gesture-handler";
+import { useRef } from "react";
+import {
+  useAnimatedValue,
+  Animated,
+  PanResponder,
+  Alert,
+  TextInput,
+  View,
+  StyleSheet,
+  Dimensions,
+  Text,
+} from "react-native";
+import { GlobalStyles, GlobalColors, Sizes } from "../Util/GlobalStyles";
 
-type DelProps = { shrink: () => void };
+const { width } = Dimensions.get("window");
 
-const RenderRight = ({ shrink }: DelProps) => {
-  return (
-    <TouchableOpacity style={styles.underlay} onPress={shrink}>
-      <Text style={GlobalStyles.text_medium}>delete</Text>
-    </TouchableOpacity>
-  );
-};
-
-type SwipeProps = {
+interface Props {
+  canSwipeFromLeft?: boolean;
+  onDeleteMessage?: { title: string; message?: string };
+  canDelete?: boolean;
   onDelete?: () => void;
-};
+  functionLeft?: () => void;
+  renderLeft?: React.ReactNode;
+  onSwipeFromLeft?: () => void;
+  children?: React.ReactNode;
+}
 
-const Swipey = ({ onDelete, children }: PropsWithChildren<SwipeProps>) => {
-  const HEIGHT = new Animated.Value(FORM_LINE_HEIGHT);
+const Swipeable = ({
+  canDelete = false,
+  onDelete = () => null,
+  onDeleteMessage,
+  canSwipeFromLeft = false,
+  renderLeft,
+  onSwipeFromLeft,
+  children,
+}: Props) => {
+  const positionX = useAnimatedValue(0);
 
-  const shrink = () => {
-    Animated.timing(HEIGHT, {
-      toValue: 0,
-      useNativeDriver: false,
-      duration: 300,
-    }).start(onDelete);
+  const resetPosition = (callback?: () => void) => {
+    Animated.timing(positionX, { toValue: 0, useNativeDriver: true }).start(callback);
   };
 
+  const panResponder = PanResponder.create({
+    onMoveShouldSetPanResponder: (_, { dx }) => Math.abs(dx) > 10 || Math.abs(dx) < -10,
+    onPanResponderMove: (e, { dx, dy }) => {
+      if (dy > 5 || dy < -10)
+        return Animated.timing(positionX, { toValue: 0, useNativeDriver: true }).start();
+      if (dx > 0 && !canSwipeFromLeft) return;
+      if (dx < 0 && !canDelete) return;
+      if (dx > width / 3) {
+        return positionX.setValue(width / 3);
+      } else if (dx <= -width / 3) {
+        return positionX.setValue(-width / 3);
+      } else {
+        positionX.setValue(dx);
+      }
+    },
+    onPanResponderRelease: (_, { dx, dy }) => {
+      if (dx < 5 && dy < 5) {
+        textInputRef.current?.focus();
+      }
+      if (dx > 0 && !canSwipeFromLeft) return;
+      if (dx < 0 && !canDelete) return;
+      if (dx > width / 3)
+        return Animated.timing(positionX, {
+          toValue: width / 3,
+          useNativeDriver: true,
+          duration: 100,
+        }).start(() => resetPosition(onSwipeFromLeft));
+
+      if (dx < -width / 3) {
+        Animated.timing(positionX, {
+          toValue: -width / 3,
+          useNativeDriver: true,
+          duration: 100,
+        }).start();
+        return Alert.alert(onDeleteMessage?.title || "Are you sure?", onDeleteMessage?.message, [
+          { text: "Cancel", onPress: () => resetPosition() },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: () => resetPosition(onDelete),
+          },
+        ]);
+      }
+      resetPosition();
+    },
+  });
+
+  const textInputRef = useRef<TextInput>(null);
+
+  const styles = StyleSheet.create({
+    delete: {
+      ...GlobalStyles.text_medium,
+
+      height: 60,
+      width: width / 2,
+      backgroundColor: "red",
+      alignSelf: "flex-end",
+      paddingRight: Sizes.m,
+      textAlign: "right",
+      textAlignVertical: "center",
+      lineHeight: 60,
+    },
+    overlay: {
+      position: "absolute",
+      transform: [
+        {
+          translateY: 0,
+        },
+        { translateX: positionX },
+      ],
+      backgroundColor: GlobalColors.background,
+      flexDirection: "row",
+      width,
+      height: 60,
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: Sizes.m,
+      paddingVertical: Sizes.s,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: GlobalColors.text_primary,
+    },
+  });
+
   return (
-    <Animated.View style={{ ...styles.container, height: HEIGHT }}>
-      <Swipeable
-        useNativeAnimations
-        renderRightActions={() => <RenderRight {...{ shrink }} />}
-        containerStyle={styles.overlay}
-      >
+    <Animated.View
+      style={{
+        width,
+        height: 60,
+        flexDirection: "row",
+        alignItems: "center",
+      }}
+    >
+      <View style={{ width: width / 2 }}>{renderLeft}</View>
+
+      <Text style={styles.delete}>Delete</Text>
+      <Animated.View {...panResponder.panHandlers} style={styles.overlay}>
         {children}
-      </Swipeable>
+      </Animated.View>
     </Animated.View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    height: FORM_LINE_HEIGHT,
-    backgroundColor: "red",
-    overflow: "hidden",
-  },
-  underlay: {
-    flexDirection: "row",
-    backgroundColor: "red",
-    alignItems: "center",
-    paddingHorizontal: Sizes.m,
-    zIndex: -1,
-  },
-  overlay: {
-    flexDirection: "row",
-    height: 50,
-    backgroundColor: GlobalColors.background,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#fff",
-    alignItems: "center",
-  },
-});
-
-export default Swipey;
+export default Swipeable;

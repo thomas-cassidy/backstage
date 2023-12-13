@@ -112,8 +112,11 @@ const CastMemberProfile = ({ route, navigation, cast, ACCESS_TOKEN }: InnerProps
 
   useEffect(() => {
     if (!editing && hasChanges) {
-      dispatch(UPDATE_CASTMEMBER_ASYNC({ castMember: tempCastMember, image: newImage }));
-      setHasChanges(false);
+      dispatch(UPDATE_CASTMEMBER_ASYNC({ castMember: tempCastMember, image: newImage })).then(
+        (e) => {
+          if (e.meta.requestStatus === "fulfilled") setHasChanges(false);
+        }
+      );
     }
   }, [editing]);
 
