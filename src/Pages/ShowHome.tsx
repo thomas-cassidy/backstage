@@ -66,29 +66,31 @@ const Home = ({ navigation }: HomeProps) => {
         }
       >
     ) => {
-      e.preventDefault();
-      Alert.alert(
-        "Are you sure you want to exit the show?",
-        "",
-        [
-          { text: "Cancel", style: "cancel", onPress: () => null },
-          {
-            text: "Yes",
-            style: "destructive",
-            onPress: () => {
-              navigation.dispatch(e.data.action);
+      if (show._id !== -1) {
+        e.preventDefault();
+        Alert.alert(
+          "Are you sure you want to exit the show?",
+          "",
+          [
+            { text: "Cancel", style: "cancel", onPress: () => null },
+            {
+              text: "Yes",
+              style: "destructive",
+              onPress: () => {
+                navigation.dispatch(e.data.action);
+              },
             },
-          },
-        ],
-        { cancelable: true }
-      );
+          ],
+          { cancelable: true }
+        );
+      }
     };
     navigation.addListener("beforeRemove", preventEscape);
 
     return () => {
       navigation.removeListener("beforeRemove", preventEscape);
     };
-  }, []);
+  }, [show._id]);
 
   return (
     <SafeAreaView style={GlobalStyles.container}>

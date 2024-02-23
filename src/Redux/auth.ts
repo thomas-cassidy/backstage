@@ -83,6 +83,7 @@ export const LOGIN_ASYNC = createAsyncThunk<
     dispatch(SET_LOADED());
     return res.data;
   } catch (e) {
+    console.log(e);
     dispatch(SET_LOADED());
     throw e;
   }

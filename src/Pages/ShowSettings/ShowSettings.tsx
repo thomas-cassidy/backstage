@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, StyleSheet, TextInput, Alert } from "react-native";
+import { ScrollView, Text, View, StyleSheet, Alert, TextInput } from "react-native";
 import React from "react";
 import { GlobalColors, GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import { FormLine, PageContainer, PageHeader, RoundButton, Spacer } from "../../Components";
@@ -6,15 +6,16 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { AppRoutes } from "../../Util/Routes";
 import { useAppDispatch, useAppSelector } from "../../Redux/hooks";
 import Swipeable from "../../Components/Swipeable";
-import { DELETE_GROUP, UPDATE_GROUP } from "../../Redux/cast";
+import { ADD_GROUP, DELETE_GROUP, UPDATE_GROUP } from "../../Redux/cast";
 import { DELETE_SHOW } from "../../Redux/show";
+import { getShow } from "../../Redux/Helpers";
 
 interface Props {
   navigation: StackNavigationProp<AppRoutes, "ShowSettings">;
 }
 
 const ShowSettings = ({ navigation }: Props) => {
-  const show = useAppSelector((state) => state.show);
+  const show = useAppSelector(getShow);
   const dispatch = useAppDispatch();
 
   const handleDelete = () => {
@@ -24,7 +25,9 @@ const ShowSettings = ({ navigation }: Props) => {
         text: "Delete",
         style: "destructive",
         onPress: () => {
-          dispatch(DELETE_SHOW());
+          dispatch(DELETE_SHOW()).then((e) => {
+            if (e.meta.requestStatus === "fulfilled") navigation.navigate("Dashboard");
+          });
         },
       },
     ]);
@@ -39,20 +42,28 @@ const ShowSettings = ({ navigation }: Props) => {
           editing={true}
           label="Show Name"
           value={show.name}
-          onChange={() => null}
+          onChange={() => Alert.alert("this doesn't work yet. soz")}
         />
         <Spacer />
-        {/* <SectionLabel label="Cast Groups" />
+        <SectionLabel label="Cast Groups" />
         <CastGroups />
         <View style={{ alignItems: "flex-end" }}>
           <RoundButton
             label="Add Group"
+            style={{ marginVertical: Sizes.s }}
             onPress={() =>
               Alert.prompt("Enter a group name", "", (text) => dispatch(ADD_GROUP(text)))
             }
           />
-        </View> */}
-
+        </View>
+        {!show.accessList && (
+          <RoundButton
+            label="Leave Show"
+            altColor
+            style={{ marginTop: Sizes.m }}
+            onPress={() => null}
+          />
+        )}
         {show.accessList && (
           <>
             <SectionLabel label="Access List" />
@@ -65,14 +76,14 @@ const ShowSettings = ({ navigation }: Props) => {
                 onChange={() => null}
               />
             ))}
+            <RoundButton
+              label="Delete Show"
+              altColor
+              style={{ marginTop: Sizes.m }}
+              onPress={handleDelete}
+            />
           </>
         )}
-        <RoundButton
-          label="Delete Show"
-          altColor
-          style={{ marginTop: Sizes.m }}
-          onPress={handleDelete}
-        />
       </ScrollView>
     </PageContainer>
   );
@@ -88,7 +99,7 @@ const CastGroups = () => {
     <View>
       {groups.map((group, index) => {
         return (
-          <Swipeable key={group} onDelete={() => dispatch(DELETE_GROUP(group))}>
+          <Swipeable key={group} canDelete onDelete={() => dispatch(DELETE_GROUP(group))}>
             <TextInput
               style={GlobalStyles.text_medium}
               onEndEditing={({ nativeEvent: { text } }) => dispatch(UPDATE_GROUP({ index, text }))}

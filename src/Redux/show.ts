@@ -8,7 +8,7 @@ import { RootState } from "./store";
 import { SET_TODOS } from "./todos";
 import { Alert } from "react-native";
 import { AXIOS_API } from "../Util/Axios";
-import { ADD_SHOW_TO_USER } from "./user";
+import { ADD_SHOW_TO_USER, DELETE_SHOW_FROM_USER } from "./user";
 
 export type ShowState = {
   _id: number | string;
@@ -176,10 +176,11 @@ export const DELETE_SHOW = createAsyncThunk<any, undefined, { state: RootState }
   async (_, { getState, dispatch }) => {
     try {
       const response = await AXIOS_API.delete<ExpectedServerSuccess | ExpectedServerFailure>(
-        `/shows/${getState().show.name}`
+        `/shows/${getState().show._id}`
       );
       if (response.data.status === "error") throw response.data.error;
-      else return;
+      dispatch(DELETE_SHOW_FROM_USER({ _id: getState().show._id }));
+      return;
     } catch (e) {
       console.log("Delete show error", e);
       return Promise.reject(e);

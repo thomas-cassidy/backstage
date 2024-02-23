@@ -90,11 +90,18 @@ const Swipeable = ({
   const textInputRef = useRef<TextInput>(null);
 
   const styles = StyleSheet.create({
+    container: {
+      // width,
+      flex: 1,
+      height: 60,
+      flexDirection: "row",
+      alignItems: "center",
+    },
     delete: {
       ...GlobalStyles.text_medium,
 
       height: 60,
-      width: width / 2,
+      flex: 1,
       backgroundColor: "red",
       alignSelf: "flex-end",
       paddingRight: Sizes.m,
@@ -112,7 +119,7 @@ const Swipeable = ({
       ],
       backgroundColor: GlobalColors.background,
       flexDirection: "row",
-      width,
+      width: "100%",
       height: 60,
       alignItems: "center",
       justifyContent: "space-between",
@@ -124,15 +131,8 @@ const Swipeable = ({
   });
 
   return (
-    <Animated.View
-      style={{
-        width,
-        height: 60,
-        flexDirection: "row",
-        alignItems: "center",
-      }}
-    >
-      <View style={{ width: width / 2 }}>{renderLeft}</View>
+    <Animated.View style={styles.container}>
+      <View style={{ flex: 1 }}>{renderLeft}</View>
 
       <Text style={styles.delete}>Delete</Text>
       <Animated.View {...panResponder.panHandlers} style={styles.overlay}>

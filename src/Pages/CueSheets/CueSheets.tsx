@@ -1,11 +1,13 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
-import { Alert, SafeAreaView, Text, TouchableOpacity } from "react-native";
+import { Alert, Dimensions, SafeAreaView, Text, TouchableOpacity } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { BarLink, PageHeader, RoundButton, Swipeable } from "../../Components";
 import { useAppSelector } from "../../Redux/hooks";
 import { GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import { AppRoutes } from "../../Util/Routes";
+
+const { width } = Dimensions.get("window");
 
 interface Props {
   navigation: StackNavigationProp<AppRoutes, "CueSheets">;
@@ -17,7 +19,7 @@ const CueSheets = ({ navigation }: Props) => {
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <PageHeader label="Cue Sheets" back onBack={() => navigation.goBack()} />
-      <ScrollView style={{ flex: 1, paddingVertical: Sizes.s }}>
+      <ScrollView style={{ flex: 1, paddingVertical: Sizes.s, width }}>
         {plots.length === 0 ? (
           <BarLink label={"Press below to add your first plot..."} style={{ height: 100 }} />
         ) : (
