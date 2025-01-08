@@ -109,6 +109,7 @@ const Home = ({ navigation }: HomeProps) => {
         <BarLink label={"Cast"} onPress={() => navigation.navigate("Cast")} />
         <BarLink label={"Cue Sheets"} onPress={() => navigation.navigate("CueSheets")} />
         <BarLink label={"To Dos"} onPress={() => navigation.navigate("Todos")} />
+        <BarLink label={"Chat"} onPress={() => navigation.navigate("Chat")} />
         <BarLink label={"Settings"} onPress={() => navigation.navigate("ShowSettings")} />
       </ScrollView>
     </SafeAreaView>

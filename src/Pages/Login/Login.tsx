@@ -113,6 +113,7 @@ const Login = ({ navigation }: Props) => {
               color="white"
               editing={true}
               onChangeText={(e) => setEmail(e)}
+              autoCapitalize={"none"}
               value={email}
               textContentType={"username"}
             />

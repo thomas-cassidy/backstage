@@ -14,4 +14,5 @@ export type AppRoutes = {
   ShowSettings: undefined;
   ImagePicker: undefined;
   Search: undefined;
+  Chat: undefined;
 };

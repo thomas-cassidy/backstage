@@ -8,3 +8,4 @@ export { Todos } from "./Todos";
 export { Settings } from "./Settings";
 export { Dashboard, NewShow } from "./Dashboard";
 export { ShowSettings } from "./ShowSettings";
+export { Chat } from "./Chat";

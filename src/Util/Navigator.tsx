@@ -13,6 +13,7 @@ import {
   Register,
   Settings,
   NewShow,
+  Chat,
 } from "../Pages";
 import { useAppSelector } from "../Redux/hooks";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
@@ -75,6 +76,7 @@ const Navigator = () => {
             />
             <MainStack.Screen component={Todos} name={"Todos"} />
             <MainStack.Screen component={ShowSettings} name={"ShowSettings"} />
+            <MainStack.Screen component={Chat} name={"Chat"} />
           </>
         )}
       </MainStack.Navigator>
