@@ -70,6 +70,9 @@ const Search = ({ navigation, user, searchResult }: InnerProps) => {
               textContentType={"name"}
               onSubmitEditing={handleSubmit}
             />
+            <Text style={{ ...GlobalStyles.text_small, opacity: 0.5, marginVertical: Sizes.s }}>
+              Show Names are case sensitive.
+            </Text>
             {searchResult !== null ? (
               searchResult === "Show not found" ? (
                 <Text style={showNotFound}>Show not found</Text>

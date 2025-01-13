@@ -17,6 +17,7 @@ export type Show = {
   owner: string;
   accessList?: string[];
   isOwner: boolean;
+  chat: Message[];
 };
 
 export type CastMember = {
@@ -52,6 +53,14 @@ export type ToDo = {
   completed: boolean;
   priority: boolean;
   _id: number | string;
+};
+
+export type Message = {
+  _id: number | string;
+  message: string;
+  dateCreated: string;
+  deleted: boolean;
+  user: number | string;
 };
 
 export type ExpectedServerSuccess = {

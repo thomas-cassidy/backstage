@@ -1,6 +1,14 @@
 import { StackNavigationProp } from "@react-navigation/stack";
-import React, { useCallback, useEffect } from "react";
-import { ScrollView, SafeAreaView, Alert, Text, View } from "react-native";
+import React, { useCallback, useEffect, useRef } from "react";
+import {
+  ScrollView,
+  SafeAreaView,
+  Alert,
+  Text,
+  View,
+  AppStateStatus,
+  AppState,
+} from "react-native";
 import { BarLink, PageHeader } from "../Components";
 import { useAppDispatch, useAppSelector } from "../Redux/hooks";
 import { GlobalStyles } from "../Util/GlobalStyles";
@@ -9,6 +17,7 @@ import { IAuthState, LOGOUT_ASYNC } from "../Redux/auth";
 import { EventArg, useIsFocused } from "@react-navigation/native";
 import { GET_SHOW_BACKGROUND, ShowState } from "../Redux/show";
 import { AppDispatch } from "../Redux/store";
+import { CONNECT_WEBSOCKET } from "../Redux/websocket";
 
 interface ContainerProps {
   navigation: StackNavigationProp<AppRoutes, "Home">;
@@ -34,6 +43,7 @@ const Home = ({ navigation }: HomeProps) => {
   const auth = useAppSelector((state) => state.auth);
   const show = useAppSelector((state) => state.show);
   const dispatch = useAppDispatch();
+  const appState = useRef(AppState.currentState);
 
   const refresh = useCallback(() => dispatch(GET_SHOW_BACKGROUND({ showId: show._id })), []);
 
@@ -43,13 +53,31 @@ const Home = ({ navigation }: HomeProps) => {
     focussed && refresh();
   }, [focussed]);
 
-  //this is making sure we navigate away from here if use is logged out
+  //this is making sure we navigate away from here if user is logged out
   useEffect(() => {
     if (auth.loggedIn === false) {
       console.log("loggedOut");
       dispatch(LOGOUT_ASYNC());
     }
   }, [auth.loggedIn]);
+
+  //connects to chat websocket for the show
+  useEffect(() => {
+    dispatch(CONNECT_WEBSOCKET());
+
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (appState.current.match(/inactive|background/) && nextAppState === "active") {
+        dispatch(CONNECT_WEBSOCKET());
+      }
+    };
+
+    const subscription = AppState.addEventListener("change", handleAppStateChange);
+
+    return () => {
+      // dispatch(CLOSE_WS());
+      subscription.remove();
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     const preventEscape = (
@@ -95,15 +123,6 @@ const Home = ({ navigation }: HomeProps) => {
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <PageHeader back backLabel="Exit Show" onBack={() => navigation.goBack()} />
-      {/* <Image
-        source={require("../../assets/NT.png")}
-        style={{
-          width: width - Sizes.l,
-          height: width - Sizes.l,
-          resizeMode: "contain",
-        }}
-        width={width}
-      /> */}
       <Text style={GlobalStyles.page_header}>{show.name}</Text>
       <ScrollView style={{ flex: 1 }}>
         <BarLink label={"Cast"} onPress={() => navigation.navigate("Cast")} />

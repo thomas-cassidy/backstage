@@ -1,13 +1,51 @@
 import { View, Dimensions, TouchableOpacity, StyleSheet } from "react-native";
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { FontAwesomeIcon, FontAwesomeIconStyle } from "@fortawesome/react-native-fontawesome";
 import { faGear, faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { GlobalColors, Sizes } from "../Util/GlobalStyles";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AppRoutes } from "../Util/Routes";
 import { useNavigation } from "@react-navigation/native";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { Transform } from "@fortawesome/fontawesome-svg-core";
 
 const { width } = Dimensions.get("window");
+
+const defaultProps = {
+  icon: null,
+  mask: null,
+  maskId: null,
+  transform: null,
+  style: {},
+  color: null,
+  secondaryColor: null,
+  secondaryOpacity: null,
+  size: 16,
+};
+
+interface FontAwesomeProps {
+  icon: IconProp;
+  /**
+   * @deprecated
+   */
+  height?: number;
+  /**
+   * @deprecated
+   */
+  width?: number;
+  size?: number;
+  color?: string;
+  secondaryColor?: string;
+  secondaryOpacity?: number;
+  mask?: IconProp;
+  maskId?: string;
+  transform?: string | Transform;
+  style?: FontAwesomeIconStyle;
+  testID?: string;
+}
+const MYFontAwesomeIcon = (props: FontAwesomeProps) => {
+  return <FontAwesomeIcon {...{ defaultProps, ...props }} />;
+};
 
 const Footer = () => {
   const navigation = useNavigation<StackNavigationProp<AppRoutes, "Dashboard">>();
@@ -23,13 +61,13 @@ const Footer = () => {
       }}
     >
       <TouchableOpacity onPress={() => navigation.navigate("NewShow")}>
-        <FontAwesomeIcon icon={faPlus} size={40} color={GlobalColors.secondary} />
+        <MYFontAwesomeIcon icon={faPlus} size={40} color={GlobalColors.secondary} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Search")}>
-        <FontAwesomeIcon icon={faSearch} size={40} color={GlobalColors.secondary} />
+        <MYFontAwesomeIcon icon={faSearch} size={40} color={GlobalColors.secondary} />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Settings")}>
-        <FontAwesomeIcon icon={faGear} size={40} color={GlobalColors.secondary} />
+        <MYFontAwesomeIcon icon={faGear} size={40} color={GlobalColors.secondary} />
       </TouchableOpacity>
     </View>
   );

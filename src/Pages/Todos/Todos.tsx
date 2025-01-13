@@ -153,13 +153,15 @@ const Todo = ({
   index,
 }: TodoProps) => {
   // const [editing, setEditing] = useState(false);
-  const { extraStyles } = StyleSheet.create({
+
+  const extraStyles = StyleSheet.create({
     extraStyles: {
       opacity: completed ? 0.5 : 1,
       textDecorationLine: completed ? "line-through" : "none",
       textDecorationStyle: "solid",
     },
   });
+
   const positionX = useAnimatedValue(0);
   const positionY = useAnimatedValue(index * 60);
 
@@ -300,7 +302,7 @@ const Todo = ({
             ref={textInputRef}
             pointerEvents={"none"}
             {...{ onChangeText, onBlur, value, onEndEditing }}
-            style={{ ...GlobalStyles.text_medium, paddingLeft: 0, ...extraStyles }}
+            style={{ ...GlobalStyles.text_medium, paddingLeft: 0, ...extraStyles.extraStyles }}
             blurOnSubmit
           />
         </View>

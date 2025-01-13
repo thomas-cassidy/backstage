@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { GlobalStyles, Sizes } from "../../Util/GlobalStyles";
 import DismissKeyboard from "../../Components/DismissKeyboard";
 import { Dimensions, KeyboardAvoidingView } from "react-native";
+import { storePersistor } from "../../Redux/store";
 const { container } = GlobalStyles;
 
 const { width } = Dimensions.get("window");
@@ -31,6 +32,11 @@ const Settings = (props: Props) => {
           <RoundButton
             label="Log Out"
             onPress={() => dispatch(LOGOUT_ASYNC())}
+            style={{ width: width * 0.8 }}
+          />
+          <RoundButton
+            label="Purge Data"
+            onPress={() => storePersistor.purge()}
             style={{ width: width * 0.8 }}
           />
         </KeyboardAvoidingView>

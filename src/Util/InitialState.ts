@@ -1,4 +1,4 @@
-import { CastState, ToDo } from "../Types/AppTypes";
+import { CastState, Message, ToDo } from "../Types/AppTypes";
 
 export const initialCastState: CastState = {
   cast: [],
@@ -15,7 +15,17 @@ export const initialTodosState: TodosState = {
   showComplete: false,
 };
 
+interface ChatState {
+  chat: Message[];
+}
+
+export const initialChatState: ChatState = {
+  chat: [],
+};
+
 // export const API_URI = "http://10.6.2.11:3001/api";
-// export const API_URI = "http://10.6.2.180:3001/api";
+export const API_URI = "http://10.6.2.180:3001/api";
 // export const API_URI = "http://192.168.1.220:3001/api";
-export const API_URI = "http://localhost:3001/api";
+// export const API_URI = "http://localhost:3001/api";
+// export const WS_URI = "10.6.2.180:3001";
+export const WS_URI = "10.6.10.53:3001";

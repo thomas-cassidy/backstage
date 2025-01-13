@@ -8,6 +8,7 @@ import { StyleSheet } from "react-native";
 // };
 export const GlobalColors = {
   background: "hsl(220, 13%, 18%)",
+  background_light: "hsl(225, 12.70%, 24.70%)",
   text_primary: "#fff",
   secondary: "#af9650",
   tertiary: "#d46161",
@@ -22,6 +23,7 @@ export const GlobalColors = {
 export const EditColors: typeof GlobalColors = {
   background: GlobalColors.text_primary,
   text_primary: GlobalColors.background,
+  background_light: "hsl(223, 13.00%, 21.20%)",
   secondary: "#ffb600",
   tertiary: "#df160d",
 };
@@ -30,7 +32,7 @@ export const font_main = "Futura";
 
 export const Sizes = {
   xs: 8,
-  s: 14,
+  s: 12,
   m: 24,
   l: 32,
   xl: 40,
@@ -53,22 +55,22 @@ export const GlobalStyles = StyleSheet.create({
   },
   text_small: {
     fontFamily: font_main,
-    fontSize: 16,
+    fontSize: 14,
     color: GlobalColors.text_primary,
   },
   text_medium: {
     fontFamily: font_main,
-    fontSize: 20,
+    fontSize: 18,
     color: GlobalColors.text_primary,
   },
   text_large: {
     fontFamily: font_main,
-    fontSize: 32,
+    fontSize: 30,
     color: GlobalColors.text_primary,
   },
   page_header: {
     fontFamily: font_main,
-    fontSize: 38,
+    fontSize: 36,
     color: GlobalColors.text_primary,
   },
 });

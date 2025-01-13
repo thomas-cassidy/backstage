@@ -17,6 +17,8 @@ import authSliceReducer from "./auth";
 import userSliceReducer from "./user";
 import statusSliceReducer from "./status";
 import showSliceReducer from "./show";
+import chatSliceReducer from "./chat";
+import websocketSliceReducer from "./websocket";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const rootReducer = combineReducers({
@@ -27,6 +29,8 @@ const rootReducer = combineReducers({
   cast: castSliceReducer,
   plots: plotsSliceReducer,
   todos: todosSliceReducer,
+  chat: chatSliceReducer,
+  websocket: websocketSliceReducer,
 });
 
 export type RootStateType = ReturnType<typeof rootReducer>;
@@ -53,7 +57,17 @@ const store = configureStore({
   middleware: (getDefault) =>
     getDefault({
       serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignoredActions: [
+          FLUSH,
+          REHYDRATE,
+          PAUSE,
+          PERSIST,
+          PURGE,
+          REGISTER,
+          "ws/CONNECT_WEBSOCKET",
+          "ws/CONNECT_WEBSOCKET/fulfilled",
+        ],
+        ignoredPaths: ["websocket.ws"],
       },
     }).concat([ACTION_LOGGER]),
 });

@@ -9,6 +9,7 @@ import { SET_TODOS } from "./todos";
 import { Alert } from "react-native";
 import { AXIOS_API } from "../Util/Axios";
 import { ADD_SHOW_TO_USER, DELETE_SHOW_FROM_USER } from "./user";
+import { SET_CHAT } from "./chat";
 
 export type ShowState = {
   _id: number | string;
@@ -84,6 +85,7 @@ export const GET_SHOW_ASYNC = createAsyncThunk<
       dispatch(SET_CAST(data.show.cast));
       dispatch(SET_PLOTS(data.show.plots));
       dispatch(SET_TODOS(data.show.todos));
+      dispatch(SET_CHAT(data.show.chat));
       dispatch(SET_LOADED());
       console.log("redux/show/GET_SHOW_ASYNC", data.show._id);
       return {
@@ -115,7 +117,14 @@ export const GET_SHOW_BACKGROUND = createAsyncThunk<
       dispatch(SET_CAST(data.show.cast));
       dispatch(SET_PLOTS(data.show.plots));
       dispatch(SET_TODOS(data.show.todos));
-
+      dispatch(
+        SET_CHAT(
+          data.show.chat.map((message) => ({
+            ...message,
+            dateCreated: new Date(message.dateCreated).toLocaleTimeString(),
+          }))
+        )
+      );
       return {
         _id: data.show._id,
         name: data.show.name,

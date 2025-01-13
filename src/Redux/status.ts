@@ -3,7 +3,8 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 export interface IStatusState {
   loading: "no data" | "loading" | "loaded";
   searchResult: ISearchResult;
-  hasSeenCastHint: boolean
+  hasSeenCastHint: boolean;
+  pushToken: string | null;
 }
 
 export type ISearchResult =
@@ -14,7 +15,8 @@ export type ISearchResult =
 const initialState: IStatusState = {
   loading: "no data",
   searchResult: null,
-  hasSeenCastHint: false
+  hasSeenCastHint: false,
+  pushToken: null,
 };
 
 const status = createSlice({
@@ -31,14 +33,24 @@ const status = createSlice({
       return { ...state, searchResult: payload };
     },
     SET_HAS_SEEN_HINT: (state) => {
-      return {...state, hasSeenCastHint: true}
+      return { ...state, hasSeenCastHint: true };
     },
     SET_HAS_NOT_SEEN_HINT: (state) => {
-      return {...state, hasSeenCastHint: false}
-    }
+      return { ...state, hasSeenCastHint: false };
+    },
+    SET_PUSH_TOKEN: (state, { payload }: PayloadAction<string | null>) => {
+      return { ...state, pushToken: payload };
+    },
   },
 });
 
-export const { SET_LOADED, SET_LOADING, SET_SEARCH_RESULT, SET_HAS_SEEN_HINT, SET_HAS_NOT_SEEN_HINT } = status.actions;
+export const {
+  SET_LOADED,
+  SET_LOADING,
+  SET_SEARCH_RESULT,
+  SET_HAS_SEEN_HINT,
+  SET_HAS_NOT_SEEN_HINT,
+  SET_PUSH_TOKEN,
+} = status.actions;
 
 export default status.reducer;

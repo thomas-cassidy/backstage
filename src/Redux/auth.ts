@@ -160,6 +160,9 @@ const auth = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(REGISTER.fulfilled, (state, { payload }) => {
+      return { ...state, ACCESS_TOKEN: payload.ACCESS_TOKEN, loggedIn: true, status: "idle" };
+    });
     builder.addCase(LOGIN_ASYNC.pending, (state, action) => {
       console.log("login pending");
     });
@@ -182,7 +185,6 @@ const auth = createSlice({
           return { ...state, status: "idle", error: error.message };
       }
     });
-
     builder.addCase(LOGOUT_ASYNC.fulfilled, (state) => {
       return { ...state, loggedIn: false, ACCESS_TOKEN: "" };
     });
